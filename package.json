@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@headlessui/react": "^2.2.10",
-    "@headlessui/tailwindcss": "^0.2.2"
-  }
-}

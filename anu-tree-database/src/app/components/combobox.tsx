@@ -13,7 +13,7 @@ export default function ComboBox( options: ComboBoxOptions ) {
       ? options
       : options.filter((options) => {
         return options.value.toLowerCase().includes(searchQuery.toLowerCase())
-      })
+      });
 
 
 
