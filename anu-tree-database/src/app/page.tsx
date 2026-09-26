@@ -14,7 +14,6 @@ export default function Home() {
         <div className="h-full bg-blue-200 flex-1/3 rounded-(--home-page-component-cornering)">
           info panel
         </div>
-        
       </main>
     </div>
   );
