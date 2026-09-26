@@ -3,7 +3,9 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --home-page-cornering: 3px;
+  --home-page-padding: 20px;
+  --home-page-component-gap: 6px;
+  --home-page-component-cornering: 18px;
 }
 
 @theme inline {
