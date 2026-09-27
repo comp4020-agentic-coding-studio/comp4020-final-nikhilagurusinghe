@@ -19,10 +19,16 @@ export type ComboBoxProps = {
   options: ComboBoxOptions;
   ariaLabel: string;
   label: string;
+  labelDescription: string;
 };
 
 // https://headlessui.com/react/combobox#selecting-multiple-values
-export default function ComboBox({ options, ariaLabel, label }: ComboBoxProps) {
+export default function ComboBox({
+  options,
+  ariaLabel,
+  label,
+  labelDescription,
+}: ComboBoxProps) {
   const MARQUEE_TEXT_LENGTH: number = 11;
 
   const [selectedOptions, setSelectedOptions] = useState<ComboBoxOptions>([]);
@@ -44,7 +50,9 @@ export default function ComboBox({ options, ariaLabel, label }: ComboBoxProps) {
 
   return (
     <div className="flex flex-row gap-x-2 h-12.5 backdrop-blur-sm px-2 py-2 rounded-full border border-white/20 items-center justify-between">
-      <span className="ml-1 font-medium">{label}</span>
+      <span className="ml-1 font-medium text-nowrap" title={labelDescription}>
+        {label}
+      </span>
       <Combobox
         multiple
         immediate
