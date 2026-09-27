@@ -60,7 +60,10 @@ export default function SliderDropdown({
 
       <div className="relative flex flex-row items-center justify-between gap-x h-full w-full">
         <div className="relative flex items-center gap-x-2">
-          <span className="ml-1 font-medium text-nowrap" title={labelDescription}>
+          <span
+            className="ml-1 font-medium text-nowrap"
+            title={labelDescription}
+          >
             {label}
           </span>
           <button
