@@ -12,6 +12,7 @@ import { useRef, useState } from "react";
 import TextMarquee from "./text-marquee";
 import DownArrow from "./icons/down-arrow";
 import Checkmark from "./icons/checkmark";
+import Cross from "./icons/cross";
 
 export type ComboBoxOptions = { value: string }[];
 export type ComboBoxProps = {
@@ -60,51 +61,68 @@ export default function ComboBox({
     >
       {({ open }) => (
         <>
-        <div className="flex flex-row gap-x-2">
-          <div className="relative">
-            <ComboboxInput
-              ref={comboboxInputRef}
-              className="w-40 text-left rounded-full py-1 pl-3 pr-8"
-              aria-label={ariaLabel}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              displayValue={(selectedOption) => {
-                if (open) {
-                  return searchQuery;
-                } else {
-                  return selectedOptions.length + " " + pluralLabel;
-                }
-              }}
-            />
-            <ComboboxButton className="absolute top-[52%] -translate-y-1/2 right-2 cursor-pointer py-2"><DownArrow height={20} fill="black" stroke="black" strokeWidth={0} className={open ? "rotate-180 transition-all" : "transition-all"} /></ComboboxButton>
+          <div className="flex flex-row items-center justify-center">
+            <div className="relative h-full">
+              <ComboboxInput
+                ref={comboboxInputRef}
+                className={clsx("w-40 text-left rounded-full py-1 h-full pl-3 pr-8 bg-white/20 backdrop-blur-sm", open ? "cursor-text" : "cursor-pointer")}
+                aria-label={ariaLabel}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                displayValue={(selectedOption) => {
+                  if (open) {
+                    return searchQuery;
+                  } else {
+                    return `${selectedOptions.length} ${pluralLabel}`;
+                  }
+                }}
+              />
+              <ComboboxButton className="absolute top-[50%] -translate-y-1/2 right-2 cursor-pointer py-2">
+                <DownArrow
+                  height={20}
+                  fill="black"
+                  stroke="black"
+                  strokeWidth={0}
+                  className={
+                    open ? "rotate-180 transition-all" : "transition-all"
+                  }
+                />
+              </ComboboxButton>
             </div>
             {selectedOptions.length > 0 && (
               <button
-                className="cursor-pointer"
+                className="cursor-pointer ml-1 w-auto h-full mr-0.5 p-1.5 bg-white/20 backdrop-blur-sm rounded-full aspect-square"
                 type="reset"
                 onClick={() => {
                   setSelectedOptions([]);
                   setSearchQuery("");
                 }}
               >
-                clear
+                <Cross height={17.5} fill="white" stroke="black" strokeWidth={2} />
               </button>
             )}
           </div>
 
           <ComboboxOptions
             anchor="bottom"
-            className="border w-(--input-width) empty:invisible mt-1 rounded-2xl"
+            className="border border-white/40 w-(--input-width) empty:invisible mt-1 rounded-2xl backdrop-blur-sm"
           >
             {optionsToDisplay.map((options) => (
               <ComboboxOption
                 key={options.value}
                 value={options}
-                className="data-focus:bg-blue-100 rounded-xl cursor-pointer py-1 m-1"
+                className="data-focus:bg-white/50 data-focus:backdrop-blur-sm rounded-xl cursor-pointer py-1 m-1"
               >
                 {({ focus, selected }) => (
                   <div className="flex flex-row px-2">
                     <p className="flex-1/4 justify-center items-center flex">
-                      {selected && <Checkmark height={17.5} fill="black" stroke="black" strokeWidth={0} />}
+                      {selected && (
+                        <Checkmark
+                          height={17.5}
+                          fill="black"
+                          stroke="black"
+                          strokeWidth={0}
+                        />
+                      )}
                     </p>
                     {options.value.length >= MARQUEE_TEXT_LENGTH ? (
                       <TextMarquee marqueeText={[options.value]} className="" />

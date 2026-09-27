@@ -8,7 +8,7 @@ export default function TextMarquee({
   className,
 }: TextMarqueeProps) {
   return (
-    <div className="relative px-2 w-full overflow-x-hidden group before:pointer-events-none before:absolute before:inset-y-0 before:inset-s-0 before:z-2 before:w-2 before:from-gray-900 before:bg-linear-to-r before:to-transparent after:pointer-events-none after:absolute after:inset-y-0 after:inset-e-0 after:z-2 after:w-2 after:from-gray-900 after:bg-linear-to-l after:to-transparent">
+    <div className="relative px-2 w-full overflow-x-hidden group">
       <div className="animate-marquee group-hover:[animation-play-state:paused] flex flex-row w-max whitespace-nowrap gap-3">
         {marqueeText.map((text) => (
           <span key={text} className={clsx("mr-4", className)}>
