@@ -1,4 +1,4 @@
-import { ComboBoxOptions } from "@/app/components/combo-box";
+import { ComboBoxOptions } from "@/app/components/filter/combo-box";
 
 const genus: ComboBoxOptions = [
   { value: "genus 1" },

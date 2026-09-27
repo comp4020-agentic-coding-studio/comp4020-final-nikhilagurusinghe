@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Filters from "./components/filters";
+import Filters from "./components/filter/filters";
 
 export default function Home() {
   return (
