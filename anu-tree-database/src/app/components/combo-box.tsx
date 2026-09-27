@@ -9,6 +9,7 @@ import {
 } from "@headlessui/react";
 import clsx from "clsx";
 import { useRef, useState } from "react";
+import TextMarquee from "./text-marquee";
 
 export type ComboBoxOptions = { value: string }[];
 export type ComboBoxProps = {
@@ -23,6 +24,8 @@ export default function ComboBox({
   ariaLabel,
   pluralLabel,
 }: ComboBoxProps) {
+  const MARQUEE_TEXT_LENGTH: number = 11;
+
   const [selectedOptions, setSelectedOptions] = useState<ComboBoxOptions>([]);
   const [blankDisplayValue, setBlankDisplayValue] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -52,46 +55,53 @@ export default function ComboBox({
     >
       {({ open }) => (
         <>
-          <div>
-            <ComboboxInput
-              ref={comboboxInputRef}
-              className="w-40 text-center"
-              aria-label={ariaLabel}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              displayValue={(selectedOption) => {
-                if (open) {
-                  return searchQuery;
-                } else {
-                  return selectedOptions.length + " " + pluralLabel;
-                }
-              }}
-            />
-            <ComboboxButton className="cursor-pointer">open</ComboboxButton>
+          <ComboboxInput
+            ref={comboboxInputRef}
+            className="w-40 text-center border rounded-full p-2"
+            aria-label={ariaLabel}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            displayValue={(selectedOption) => {
+              if (open) {
+                return searchQuery;
+              } else {
+                return selectedOptions.length + " " + pluralLabel;
+              }
+            }}
+          />
+          <ComboboxButton className="cursor-pointer">open</ComboboxButton>
+          {selectedOptions.length > 0 && (
             <button
               className="cursor-pointer"
               type="reset"
-              onClick={() => setSelectedOptions([])}
+              onClick={() => {
+                setSelectedOptions([]);
+                setSearchQuery("");
+              }}
             >
               clear
             </button>
-          </div>
+          )}
 
           <ComboboxOptions
             anchor="bottom"
-            className="border w-(--input-width) empty:invisible"
+            className="border w-(--input-width) empty:invisible mt-1 rounded-2xl"
           >
             {filteredOptions.map((options) => (
               <ComboboxOption
                 key={options.value}
                 value={options}
-                className="data-focus:bg-blue-100 cursor-pointer pl-5"
+                className="data-focus:bg-blue-100 rounded-xl cursor-pointer py-1 m-1"
               >
                 {({ focus, selected }) => (
-                  <div
-                    className={clsx("group flex gap-2", focus && "bg-blue-100")}
-                  >
-                    {selected && "x"}
-                    {options.value}
+                  <div className="flex flex-row">
+                    <p className="flex-1/5 justify-center items-center flex">
+                      {selected && "x"}
+                    </p>
+                    {options.value.length >= MARQUEE_TEXT_LENGTH ? (
+                      <TextMarquee marqueeText={[options.value]} className="" />
+                    ) : (
+                      <span className="flex-4/5 truncate">{options.value}</span>
+                    )}
                   </div>
                 )}
               </ComboboxOption>

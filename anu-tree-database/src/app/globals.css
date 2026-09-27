@@ -8,11 +8,38 @@
   --home-page-component-cornering: 18px;
 }
 
-@theme inline {
+/* @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+} */
+
+@theme {
+  --animate-marquee: marquee 5s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 5s linear infinite;
+
+  @keyframes marquee {
+    0%,
+    50% {
+      transform: translateX(0%);
+    }
+
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  @keyframes marquee-reverse {
+    0%,
+    50% {
+      transform: translateX(100%);
+    }
+
+    100% {
+      transform: translateX(0%);
+    }
+  }
 }
 
 /* @media (prefers-color-scheme: dark) {
