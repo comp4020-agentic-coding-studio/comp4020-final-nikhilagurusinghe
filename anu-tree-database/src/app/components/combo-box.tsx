@@ -65,7 +65,10 @@ export default function ComboBox({
             <div className="relative h-full">
               <ComboboxInput
                 ref={comboboxInputRef}
-                className={clsx("w-40 text-left rounded-full py-1 h-full pl-3 pr-8 bg-white/20 backdrop-blur-sm", open ? "cursor-text" : "cursor-pointer")}
+                className={clsx(
+                  "w-40 text-left rounded-full py-1 h-full pl-3 pr-8 bg-white/20 backdrop-blur-sm",
+                  open ? "cursor-text" : "cursor-pointer",
+                )}
                 aria-label={ariaLabel}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 displayValue={(selectedOption) => {
@@ -97,7 +100,12 @@ export default function ComboBox({
                   setSearchQuery("");
                 }}
               >
-                <Cross height={17.5} fill="white" stroke="black" strokeWidth={2} />
+                <Cross
+                  height={17.5}
+                  fill="white"
+                  stroke="black"
+                  strokeWidth={2}
+                />
               </button>
             )}
           </div>
