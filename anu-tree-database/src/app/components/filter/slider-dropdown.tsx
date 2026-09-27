@@ -121,8 +121,8 @@ export default function SliderDropdown({
               <div className="absolute top-[50%] -translate-y-1/2 right-2 cursor-pointer py-2">
                 <DownArrow
                   height={20}
-                  fill="black"
-                  stroke="black"
+                  fill="white"
+                  stroke="white"
                   strokeWidth={0}
                   className={
                     isOpen ? "rotate-180 transition-all" : "transition-all"
@@ -146,7 +146,7 @@ export default function SliderDropdown({
               <Cross
                 height={17.5}
                 fill="white"
-                stroke="black"
+                stroke="white"
                 strokeWidth={2}
               />
             </button>

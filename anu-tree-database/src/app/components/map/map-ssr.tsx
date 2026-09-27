@@ -15,8 +15,8 @@ export default function MapSSR() {
   );
 
   return (
-    <div className="z-1 h-full w-full">
-      <Map position={[51.505, -0.09]} zoom={13} />
+    <div className="z-0 h-full w-full">
+      <Map />
     </div>
   );
 }

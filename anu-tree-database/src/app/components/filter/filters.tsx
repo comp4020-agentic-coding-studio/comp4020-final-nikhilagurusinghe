@@ -4,7 +4,7 @@ import SliderDropdown from "./slider-dropdown";
 
 export default function Filters() {
   return (
-    <div className="z-100 absolute w-full top-0 left-0 right-0 h-20 overflow-x-auto overflow-y-visible scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+    <div className="z-100 absolute w-full top-0 left-0 right-0 h-30 from-black/60 via-black/10 to-transparent text-white bg-linear-to-b overflow-x-auto overflow-y-visible scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <div className="flex flex-row gap-x-2.5 mt-5 ml-4 w-auto items-center justify-start">
         <ComboBox
           options={genus}

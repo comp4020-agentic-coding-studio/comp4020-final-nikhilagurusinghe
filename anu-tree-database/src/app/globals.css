@@ -17,8 +17,8 @@
 } */
 
 @theme {
-  --animate-marquee: marquee 5s linear infinite;
-  --animate-marquee-reverse: marquee-reverse 5s linear infinite;
+  --animate-marquee: marquee 10s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 10s linear infinite;
 
   @keyframes marquee {
     0%,

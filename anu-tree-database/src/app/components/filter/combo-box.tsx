@@ -87,8 +87,8 @@ export default function ComboBox({
                 <ComboboxButton className="absolute top-[50%] -translate-y-1/2 right-2 cursor-pointer py-2">
                   <DownArrow
                     height={20}
-                    fill="black"
-                    stroke="black"
+                    fill="white"
+                    stroke="white"
                     strokeWidth={0}
                     className={
                       open ? "rotate-180 transition-all" : "transition-all"
@@ -108,7 +108,7 @@ export default function ComboBox({
                   <Cross
                     height={17.5}
                     fill="white"
-                    stroke="black"
+                    stroke="white"
                     strokeWidth={2}
                   />
                 </button>
@@ -118,7 +118,7 @@ export default function ComboBox({
             <ComboboxOptions
               anchor="bottom"
               portal={true}
-              className="border border-white/20 w-(--input-width) empty:invisible mt-1 rounded-2xl backdrop-blur-sm"
+              className="z-6767 border text-white border-white/20 w-(--input-width) empty:invisible mt-1 rounded-2xl backdrop-blur-sm"
             >
               {optionsToDisplay.map((options) => (
                 <ComboboxOption
@@ -132,8 +132,8 @@ export default function ComboBox({
                         {selected && (
                           <Checkmark
                             height={17.5}
-                            fill="black"
-                            stroke="black"
+                            fill="white"
+                            stroke="white"
                             strokeWidth={0}
                           />
                         )}
