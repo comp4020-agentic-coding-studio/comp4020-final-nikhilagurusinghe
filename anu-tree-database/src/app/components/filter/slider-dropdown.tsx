@@ -37,6 +37,16 @@ export default function SliderDropdown({
     sliderValues.startValue === sliderMin &&
     sliderValues.endValue === sliderMax;
 
+  let filterDescription: string = `${sliderValues.startValue}m to ${sliderValues.endValue}m`;
+
+  if (isSliderDefault) {
+    filterDescription = "all";
+  } else if (sliderValues.startValue === sliderMin) {
+    filterDescription = `≤ ${sliderValues.endValue}m`;
+  } else if (sliderValues.endValue === sliderMax) {
+    filterDescription = `≥ ${sliderValues.startValue}m`
+  } 
+
   return (
     <div className="relative h-12.5 px-2 py-2">
       <div
@@ -54,7 +64,7 @@ export default function SliderDropdown({
           className="relative w-40 text-left rounded-full py-1 h-full pl-3 pr-8 bg-white/20 backdrop-blur-sm cursor-pointer"
           onClick={() => setIsOpen((prevIsOpen) => !prevIsOpen)}
         >
-          hello
+          {filterDescription}
           <div className="absolute top-[50%] -translate-y-1/2 right-2 cursor-pointer py-2">
             <DownArrow
               height={20}
