@@ -109,7 +109,7 @@ export default function ComboBox({ options, ariaLabel, label }: ComboBoxProps) {
 
             <ComboboxOptions
               anchor="bottom"
-              className="border border-white/40 w-(--input-width) empty:invisible mt-1 rounded-2xl backdrop-blur-sm"
+              className="border border-white/20 w-(--input-width) empty:invisible mt-1 rounded-2xl backdrop-blur-sm"
             >
               {optionsToDisplay.map((options) => (
                 <ComboboxOption
