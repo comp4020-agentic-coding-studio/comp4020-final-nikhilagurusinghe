@@ -117,6 +117,7 @@ export default function ComboBox({
 
             <ComboboxOptions
               anchor="bottom"
+              portal={true}
               className="border border-white/20 w-(--input-width) empty:invisible mt-1 rounded-2xl backdrop-blur-sm"
             >
               {optionsToDisplay.map((options) => (
