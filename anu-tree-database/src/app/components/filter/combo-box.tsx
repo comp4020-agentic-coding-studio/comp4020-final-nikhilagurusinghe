@@ -43,7 +43,7 @@ export default function ComboBox({ options, ariaLabel, label }: ComboBoxProps) {
     filteredOptions.length === 0 ? options : filteredOptions;
 
   return (
-    <div className="flex flex-row gap-x-2 h-12.5 backdrop-blur-sm px-2 py-2 rounded-full border border-white/20 items-center justify-center">
+    <div className="flex flex-row gap-x-2 h-12.5 backdrop-blur-sm px-2 py-2 rounded-full border border-white/20 items-center justify-between">
       <span className="ml-1 font-medium">{label}</span>
       <Combobox
         multiple

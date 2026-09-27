@@ -10,7 +10,7 @@ export default function Filters() {
         ariaLabel="Choose genuses to filter by"
         label="genera"
       />
-      <SliderDropdown label="canopy radius" sliderMin={0} sliderMax={20} />
+      <SliderDropdown label="canopy radius" sliderMin={0} sliderMax={50} />
 
       <div></div>
     </div>
