@@ -24,7 +24,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="h-full w-full flex flex-col">{children}</body>
+      <body className="h-full w-full flex flex-col">
+        <nav>
+          <h1 className="sr-only">ANU Tree Map</h1>
+        </nav>
+        {children}
+      </body>
     </html>
   );
 }

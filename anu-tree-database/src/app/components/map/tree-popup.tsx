@@ -43,7 +43,7 @@ export default function TreePopup({
     [&_.leaflet-popup-close-button_span]:text-white! [&_.leaflet-popup-close-button_span]:font-serif! [&_.leaflet-popup-close-button_span]:text-3xl!
       [&_.leaflet-popup-close-button]:mt-1! [&_.leaflet-popup-close-button]:mr-2.5!"
     >
-      <section className="flex flex-col px-1 py-2">
+      <main className="flex flex-col px-1 py-2">
         <span className="mb-1">
           <h1 className="text-2xl/6.5 font-bold mb-1 text-(--highlight-colour)">
             {name}
@@ -116,7 +116,7 @@ export default function TreePopup({
             </span>
           </Link>
         </div>
-      </section>
+      </main>
     </Popup>
   );
 }
