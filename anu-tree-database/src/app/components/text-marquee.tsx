@@ -8,10 +8,10 @@ export default function TextMarquee({
   className,
 }: TextMarqueeProps) {
   return (
-    <div className="relative px-2 w-full overflow-x-hidden group">
+    <div className="px-2 relative w-full overflow-x-hidden group">
       <div className="animate-marquee group-hover:[animation-play-state:paused] flex flex-row w-max whitespace-nowrap gap-3">
         {marqueeText.map((text) => (
-          <span key={text} className={clsx("mr-4", className)}>
+          <span key={text} className={clsx("mr-4")}>
             {text}
           </span>
         ))}
@@ -21,7 +21,7 @@ export default function TextMarquee({
         aria-hidden={true}
       >
         {marqueeText.map((text) => (
-          <span key={text} className={clsx("mr-4", className)}>
+          <span key={text} className={clsx("mr-4")}>
             {text}
           </span>
         ))}

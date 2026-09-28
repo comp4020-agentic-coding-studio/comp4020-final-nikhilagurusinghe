@@ -13,6 +13,7 @@ export default async function Filters() {
     await db.selectDistinct({ id: treesTable.scientificName }).from(treesTable)
   )
     .map(({ id }) => id.split(" ")[0])
+    .sort()
     .filter((x, i, a) => a.indexOf(x) === i)
     .map((genera) => {
       return { value: genera };
