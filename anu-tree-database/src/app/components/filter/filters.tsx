@@ -1,8 +1,23 @@
 import genus from "@/test_data/genus";
-import ComboBox from "./combo-box";
+import ComboBox, { ComboBoxOptions } from "./combo-box";
 import SliderDropdown from "./slider-dropdown";
+import "dotenv/config";
+import { drizzle } from "drizzle-orm/libsql";
+import { treesTable } from "@/db/schema";
 
-export default function Filters() {
+export default async function Filters() {
+  const db = drizzle(process.env.DB_FILE_NAME!);
+
+  // TODO use memo this
+  const genera: ComboBoxOptions = (
+    await db.selectDistinct({ id: treesTable.scientificName }).from(treesTable)
+  )
+    .map(({ id }) => id.split(" ")[0])
+    .filter((x, i, a) => a.indexOf(x) === i)
+    .map((genera) => {
+      return { value: genera };
+    });
+
   return (
     <div className="z-100 absolute w-full top-0 left-0 right-0 h-30 from-black/60 via-black/10 to-transparent text-white bg-linear-to-b overflow-x-auto overflow-y-visible scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <div className="flex flex-row gap-x-2.5 mt-5 ml-4 w-auto items-center justify-start">
@@ -13,7 +28,7 @@ export default function Filters() {
           labelDescription="The classification of the tree species."
         />
         <ComboBox
-          options={genus}
+          options={genera}
           ariaLabel="Choose genuses to filter by"
           label="genera"
           labelDescription="The genus of the tree species."
