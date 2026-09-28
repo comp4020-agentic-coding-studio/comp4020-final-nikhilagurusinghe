@@ -43,6 +43,12 @@
   }
 }
 
+@layer components {
+  .leaflet-control-zoom-in {
+    @apply flex h-10 w-10 items-center justify-center rounded-t-lg bg-white/80 text-xl text-black shadow-none hover:bg-white;
+  }
+}
+
 /* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
