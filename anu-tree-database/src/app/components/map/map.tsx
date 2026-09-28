@@ -9,13 +9,14 @@ import {
 import "leaflet/dist/leaflet.css";
 import { LatLngTuple } from "leaflet";
 import TreeMarker from "./tree-marker";
+import TreePopup from "./tree-popup";
 
 // import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css"
 
 export default function Map() {
   const DEFAULT_POSITION: LatLngTuple = [-35.278576, 149.118371];
   const DEFAULT_ZOOM: number = 16;
-  const MIN_ZOOM: number = 14;
+  const MIN_ZOOM: number = 15;
 
   return (
     <MapContainer
@@ -37,10 +38,7 @@ export default function Map() {
         position={DEFAULT_POSITION}
         initialZoom={DEFAULT_ZOOM}
       >
-        <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.
-          <div>hello</div>
-        </Popup>
+        <TreePopup />
       </TreeMarker>
       <ZoomControl position="bottomright" />
     </MapContainer>

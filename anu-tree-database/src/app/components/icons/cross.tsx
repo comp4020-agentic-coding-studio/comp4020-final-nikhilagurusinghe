@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { IconComponentProps } from "./icon-component-props";
 
-export default function Cross({
+export default function CrossIcon({
   height,
   stroke,
   strokeWidth,
@@ -19,6 +19,7 @@ export default function Cross({
       stroke={stroke}
       strokeWidth={strokeWidth}
       style={{ height }}
+      aria-hidden={true}
     >
       <path
         strokeLinecap="round"

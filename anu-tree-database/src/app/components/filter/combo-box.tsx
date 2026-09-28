@@ -10,9 +10,9 @@ import {
 import clsx from "clsx";
 import { useRef, useState } from "react";
 import TextMarquee from "../text-marquee";
-import DownArrow from "../icons/down-arrow";
-import Checkmark from "../icons/checkmark";
-import Cross from "../icons/cross";
+import DownArrowIcon from "../icons/down-arrow";
+import CheckmarkIcon from "../icons/checkmark";
+import CrossIcon from "../icons/cross";
 
 export type ComboBoxOptions = { value: string }[];
 export type ComboBoxProps = {
@@ -85,7 +85,7 @@ export default function ComboBox({
                   }}
                 />
                 <ComboboxButton className="absolute top-[50%] -translate-y-1/2 right-2 cursor-pointer py-2">
-                  <DownArrow
+                  <DownArrowIcon
                     height={20}
                     fill="white"
                     stroke="white"
@@ -105,7 +105,7 @@ export default function ComboBox({
                     setSearchQuery("");
                   }}
                 >
-                  <Cross
+                  <CrossIcon
                     height={17.5}
                     fill="white"
                     stroke="white"
@@ -130,7 +130,7 @@ export default function ComboBox({
                     <div className="flex flex-row px-2">
                       <p className="flex-1/4 justify-center items-center flex">
                         {selected && (
-                          <Checkmark
+                          <CheckmarkIcon
                             height={17.5}
                             fill="white"
                             stroke="white"

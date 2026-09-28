@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import DownArrow from "../icons/down-arrow";
+import DownArrowIcon from "../icons/down-arrow";
 import ReactSlider from "react-slider";
 import clsx from "clsx";
-import Cross from "../icons/cross";
+import CrossIcon from "../icons/cross";
 import { createPortal } from "react-dom";
 
 type SliderDropdownProps = {
@@ -88,6 +88,7 @@ export default function SliderDropdown({
     filterDescription = `≥ ${sliderValues.startValue}m`;
   }
 
+  // TODO change the portal so that clicking outside of the dropdown closes the portal
   return (
     <>
       <div className="relative h-12.5 px-2 py-2">
@@ -119,7 +120,7 @@ export default function SliderDropdown({
             >
               {filterDescription}
               <div className="absolute top-[50%] -translate-y-1/2 right-2 cursor-pointer py-2">
-                <DownArrow
+                <DownArrowIcon
                   height={20}
                   fill="white"
                   stroke="white"
@@ -143,7 +144,7 @@ export default function SliderDropdown({
                 });
               }}
             >
-              <Cross
+              <CrossIcon
                 height={17.5}
                 fill="white"
                 stroke="white"
@@ -206,7 +207,7 @@ export default function SliderDropdown({
               )}
               minDistance={10}
             />
-            <span className="text-center w-full">in metres</span>
+            <span className="text-white text-center w-full">in metres</span>
           </div>,
           document.body,
         )}
