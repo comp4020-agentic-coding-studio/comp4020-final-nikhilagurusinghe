@@ -38,7 +38,20 @@ export default function Map() {
         position={DEFAULT_POSITION}
         initialZoom={DEFAULT_ZOOM}
       >
-        <TreePopup />
+        <TreePopup
+          name={"test tree"}
+          scientificName={"scientifica name"}
+          height={2}
+          crownRadius={20}
+          diameter={1}
+          age="Fair"
+          health="Good"
+          structure="Tree"
+          classification="Evergreen"
+          gpsCoords={[DEFAULT_POSITION[0], DEFAULT_POSITION[1]]}
+          comments="Big tree"
+          likes={2}
+        />
       </TreeMarker>
       <ZoomControl position="bottomright" />
     </MapContainer>

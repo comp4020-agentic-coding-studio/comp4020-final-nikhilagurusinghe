@@ -21,18 +21,24 @@ export default function Filters() {
         <SliderDropdown
           label="height"
           labelDescription="The height of the tree."
+          unitsOfMeasurement="metres"
+          unitAbbreviation="m"
           sliderMin={0}
           sliderMax={50}
         />
         <SliderDropdown
           label="crown radius"
           labelDescription="The radius of the tree at the widest part of its canopy."
+          unitsOfMeasurement="metres"
+          unitAbbreviation="m"
           sliderMin={0}
           sliderMax={50}
         />
         <SliderDropdown
           label="trunk diameter"
           labelDescription="The radius of the tree at the widest part of its canopy."
+          unitsOfMeasurement="metres"
+          unitAbbreviation="m"
           sliderMin={0}
           sliderMax={50}
         />

@@ -10,6 +10,8 @@ import { createPortal } from "react-dom";
 type SliderDropdownProps = {
   label: string;
   labelDescription: string;
+  unitsOfMeasurement: string;
+  unitAbbreviation: string;
   sliderMin: number;
   sliderMax: number;
 };
@@ -20,6 +22,8 @@ type PortalPosition = { top: number; left: number; width: number };
 export default function SliderDropdown({
   label,
   labelDescription,
+  unitsOfMeasurement,
+  unitAbbreviation,
   sliderMin,
   sliderMax,
 }: SliderDropdownProps) {
@@ -78,14 +82,14 @@ export default function SliderDropdown({
     sliderValues.startValue === sliderMin &&
     sliderValues.endValue === sliderMax;
 
-  let filterDescription: string = `${sliderValues.startValue}m to ${sliderValues.endValue}m`;
+  let filterDescription: string = `${sliderValues.startValue}${unitAbbreviation} to ${sliderValues.endValue}${unitAbbreviation}`;
 
   if (isSliderDefault) {
     filterDescription = "all";
   } else if (sliderValues.startValue === sliderMin) {
-    filterDescription = `≤ ${sliderValues.endValue}m`;
+    filterDescription = `≤ ${sliderValues.endValue}${unitAbbreviation}`;
   } else if (sliderValues.endValue === sliderMax) {
-    filterDescription = `≥ ${sliderValues.startValue}m`;
+    filterDescription = `≥ ${sliderValues.startValue}${unitAbbreviation}`;
   }
 
   // TODO change the portal so that clicking outside of the dropdown closes the portal
@@ -207,7 +211,9 @@ export default function SliderDropdown({
               )}
               minDistance={10}
             />
-            <span className="text-white text-center w-full">in metres</span>
+            <span className="text-white text-center w-full">
+              in {unitsOfMeasurement}
+            </span>
           </div>,
           document.body,
         )}
