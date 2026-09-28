@@ -2,6 +2,7 @@ import { Popup } from "react-leaflet";
 import LinkIcon from "../icons/link";
 import Link from "next/link";
 import HeartIcon from "../icons/heart";
+import { useState } from "react";
 
 export type TreePopupProps = {
   name: string;
@@ -32,13 +33,15 @@ export default function TreePopup({
   comments,
   likes,
 }: TreePopupProps) {
+  const [likeSent, setLikeSent] = useState<boolean>(false);
+
   return (
     <Popup
       className="
     [&_.leaflet-popup-content]:text-white! [&_.leaflet-popup-content]:font-sans!
-      [&_.leaflet-popup-content-wrapper]:bg-transparent! [&_.leaflet-popup-content-wrapper]:backdrop-blur-xl! [&_.leaflet-popup-content-wrapper]:border-white/20! [&_.leaflet-popup-content-wrapper]:rounded-2xl! [&_.leaflet-popup-content-wrapper]:border!
+      [&_.leaflet-popup-content-wrapper]:bg-transparent! [&_.leaflet-popup-content-wrapper]:backdrop-blur-lg! [&_.leaflet-popup-content-wrapper]:border-white/20! [&_.leaflet-popup-content-wrapper]:rounded-2xl! [&_.leaflet-popup-content-wrapper]:border!
     [&_.leaflet-popup-close-button_span]:text-white! [&_.leaflet-popup-close-button_span]:font-serif! [&_.leaflet-popup-close-button_span]:text-3xl!
-      [&_.leaflet-popup-close-button]:mt-1! [&_.leaflet-popup-close-button]:mr-2!"
+      [&_.leaflet-popup-close-button]:mt-1! [&_.leaflet-popup-close-button]:mr-2.5!"
     >
       <section className="flex flex-col px-1 py-2">
         <span className="mb-1">
@@ -58,13 +61,19 @@ export default function TreePopup({
         <div className="flex flex-row gap-x-1 gap-y-1 w-full flex-wrap mt-5">
           <button
             type="button"
-            className="cursor-pointer flex flex-row text-sm font-bold w-fit items-center gap-x-1 backdrop-blur-md bg-white/20 py-1 px-3 text-white rounded-full whitespace-nowrap truncate"
+            className="group cursor-pointer flex flex-row text-sm font-bold w-fit items-center gap-x-2 backdrop-blur-md bg-white/20 py-1 px-3 text-white rounded-full whitespace-nowrap truncate"
+            onClick={() => {
+              if (!likeSent) {
+                setLikeSent(true);
+              }
+            }}
           >
             <HeartIcon
               height={15}
-              stroke="#d0d0d0"
+              stroke={likeSent ? "red" : "#d0d0d0"}
               strokeWidth={3}
-              fill="none"
+              fill={likeSent ? "red" : "none"}
+              className="group-hover:scale-120 transition-all"
             />
             {likes} likes
           </button>
@@ -73,13 +82,15 @@ export default function TreePopup({
             href={`https://www.google.com/maps/search/?api=1&query=${gpsCoords[0]},${gpsCoords[1]}`}
             target="_blank"
             rel="noopener noreferrer"
+            className="group"
           >
-            <span className="flex flex-row text-sm font-bold w-fit items-center gap-x-1 backdrop-blur-md bg-white/20 py-1 px-3 text-white rounded-full whitespace-nowrap">
+            <span className="flex flex-row text-sm font-bold w-fit items-center gap-x-2 backdrop-blur-md bg-white/20 py-1 px-3 text-white rounded-full whitespace-nowrap">
               <LinkIcon
                 height={15}
                 stroke="#d0d0d0"
                 strokeWidth={3}
                 fill="none"
+                className="group-hover:scale-120 transition-all"
               />
               {gpsCoords[0]}, {gpsCoords[1]}
             </span>
@@ -91,13 +102,15 @@ export default function TreePopup({
             )}`}
             target="_blank"
             rel="noopener noreferrer"
+            className="group"
           >
-            <span className="flex flex-row text-sm font-bold w-fit items-center gap-x-1 backdrop-blur-md bg-white/20 py-1 px-3 text-white rounded-full whitespace-nowrap">
+            <span className="flex flex-row text-sm font-bold w-fit items-center gap-x-2 backdrop-blur-md bg-white/20 py-1 px-3 text-white rounded-full whitespace-nowrap">
               <LinkIcon
                 height={15}
                 stroke="#d0d0d0"
                 strokeWidth={3}
                 fill="none"
+                className="group-hover:scale-120 transition-all"
               />
               learn more on Wikipedia
             </span>
