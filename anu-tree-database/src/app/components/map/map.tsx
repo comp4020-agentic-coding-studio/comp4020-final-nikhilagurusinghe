@@ -11,8 +11,6 @@ import { LatLngTuple } from "leaflet";
 import TreeMarker from "./tree-marker";
 import TreePopup from "./tree-popup";
 
-// import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css"
-
 export default function Map() {
   const DEFAULT_POSITION: LatLngTuple = [-35.278576, 149.118371];
   const DEFAULT_ZOOM: number = 16;

@@ -16,6 +16,7 @@ type FilterProps = {
   structureOptions: ComboBoxOptions;
 };
 
+// TODO reset all button
 export default function Filters({
   classificationOptions,
   generaOptions,
@@ -103,7 +104,7 @@ export default function Filters({
       }
     : crownRadsDefaultValue;
 
-  const diametersParams: string | null = searchParams.get("radius");
+  const diametersParams: string | null = searchParams.get("diameter");
   const diametersDefaultValue: SliderValues = {
     startValue: diameterMinMax.min,
     endValue: diameterMinMax.max,
