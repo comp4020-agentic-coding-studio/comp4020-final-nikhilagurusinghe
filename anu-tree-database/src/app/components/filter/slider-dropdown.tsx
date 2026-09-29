@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import DownArrowIcon from "../icons/down-arrow";
 import ReactSlider from "react-slider";
 import clsx from "clsx";
@@ -14,9 +14,11 @@ type SliderDropdownProps = {
   unitAbbreviation: string;
   sliderMin: number;
   sliderMax: number;
+  sliderValues: SliderValues;
+  setSliderValues: Dispatch<SetStateAction<SliderValues>>;
 };
 
-type SliderValues = { startValue: number; endValue: number };
+export type SliderValues = { startValue: number; endValue: number };
 export type SliderMinMax = { max: number; min: number };
 type PortalPosition = { top: number; left: number; width: number };
 
@@ -27,6 +29,8 @@ export default function SliderDropdown({
   unitAbbreviation,
   sliderMin,
   sliderMax,
+  sliderValues,
+  setSliderValues,
 }: SliderDropdownProps) {
   const START_TRACK_CLASS: string = "track-0";
   const CENTER_TRACK_CLASS: string = "track-1";
@@ -40,10 +44,6 @@ export default function SliderDropdown({
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const [sliderValues, setSliderValues] = useState<SliderValues>({
-    startValue: sliderMin,
-    endValue: sliderMax,
-  });
   const [portalPosition, setPortalPosition] = useState<PortalPosition>({
     top: 0,
     left: 0,

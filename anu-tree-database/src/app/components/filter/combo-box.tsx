@@ -8,7 +8,7 @@ import {
   ComboboxOptions,
 } from "@headlessui/react";
 import clsx from "clsx";
-import { useRef, useState } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import TextMarquee from "../text-marquee";
 import DownArrowIcon from "../icons/down-arrow";
 import CheckmarkIcon from "../icons/checkmark";
@@ -20,6 +20,8 @@ export type ComboBoxProps = {
   ariaLabel: string;
   label: string;
   labelDescription: string;
+  selectedOptions: ComboBoxOptions;
+  setSelectedOptions: Dispatch<SetStateAction<ComboBoxOptions>>;
 };
 
 // https://headlessui.com/react/combobox#selecting-multiple-values
@@ -28,10 +30,11 @@ export default function ComboBox({
   ariaLabel,
   label,
   labelDescription,
+  selectedOptions,
+  setSelectedOptions,
 }: ComboBoxProps) {
   const MARQUEE_TEXT_LENGTH: number = 11;
 
-  const [selectedOptions, setSelectedOptions] = useState<ComboBoxOptions>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const comboboxInputRef = useRef<HTMLInputElement>(null);
