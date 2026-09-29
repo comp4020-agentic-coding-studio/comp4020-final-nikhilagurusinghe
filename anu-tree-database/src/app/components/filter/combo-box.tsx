@@ -48,6 +48,7 @@ export default function ComboBox({
   const optionsToDisplay =
     filteredOptions.length === 0 ? options : filteredOptions;
 
+  // TODO we marquee text based on string length not box width, so short character widths with more characters are marqueed
   return (
     <div className="flex flex-row gap-x-2 h-12.5 backdrop-blur-sm px-2 py-2 rounded-full border border-white/20 items-center justify-between">
       <span className="ml-1 font-medium text-nowrap" title={labelDescription}>
