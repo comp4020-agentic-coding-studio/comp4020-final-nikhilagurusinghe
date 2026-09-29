@@ -2,9 +2,7 @@
   "version": "7",
   "dialect": "sqlite",
   "id": "25098237-75ad-4192-8b3f-eab44037938f",
-  "prevIds": [
-    "00000000-0000-0000-0000-000000000000"
-  ],
+  "prevIds": ["00000000-0000-0000-0000-000000000000"],
   "ddl": [
     {
       "name": "tree_likes_table",
@@ -205,13 +203,9 @@
       "table": "trees_table"
     },
     {
-      "columns": [
-        "treeId"
-      ],
+      "columns": ["treeId"],
       "tableTo": "trees_table",
-      "columnsTo": [
-        "id"
-      ],
+      "columnsTo": ["id"],
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "nameExplicit": false,
@@ -220,18 +214,14 @@
       "table": "tree_likes_table"
     },
     {
-      "columns": [
-        "treeId"
-      ],
+      "columns": ["treeId"],
       "nameExplicit": false,
       "name": "tree_likes_table_pk",
       "table": "tree_likes_table",
       "entityType": "pks"
     },
     {
-      "columns": [
-        "id"
-      ],
+      "columns": ["id"],
       "nameExplicit": false,
       "name": "trees_table_pk",
       "table": "trees_table",

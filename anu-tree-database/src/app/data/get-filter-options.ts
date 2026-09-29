@@ -1,5 +1,6 @@
+import "server-only";
+
 import { unstable_cache } from "next/cache";
-import "dotenv/config";
 import { drizzle } from "drizzle-orm/libsql";
 import { treesTable } from "@/db/schema";
 import { ComboBoxOptions } from "../components/filter/combo-box";
@@ -38,7 +39,7 @@ export const getAgeOptions = unstable_cache(
       .selectDistinct({ age: treesTable.age })
       .from(treesTable);
 
-    return distinctAges.map(({age}) => ({ value: age ?? "" }));
+    return distinctAges.map(({ age }) => ({ value: age ?? "" }));
   },
   undefined,
   {
@@ -54,14 +55,15 @@ export const getClassificationOptions = unstable_cache(
       .selectDistinct({ classification: treesTable.classification })
       .from(treesTable);
 
-    return distinctAges.map(({classification}) => ({ value: classification }));
+    return distinctAges.map(({ classification }) => ({
+      value: classification,
+    }));
   },
   undefined,
   {
     revalidate: CACHE_REVALIDATE_SECONDS,
   },
 );
-
 
 export const getStructureOptions = unstable_cache(
   async (): Promise<ComboBoxOptions> => {
@@ -71,7 +73,7 @@ export const getStructureOptions = unstable_cache(
       .selectDistinct({ structure: treesTable.structure })
       .from(treesTable);
 
-    return distinctAges.map(({structure}) => ({ value: structure }));
+    return distinctAges.map(({ structure }) => ({ value: structure }));
   },
   undefined,
   {
@@ -90,7 +92,10 @@ function getMaxMin(databaseColumn: SQLiteColumn): () => Promise<{
       .select({ max: max(databaseColumn), min: min(databaseColumn) })
       .from(treesTable);
 
-    return { max: (maxMinHeight[0].max as number) ?? 0, min: (maxMinHeight[0].min as number) ?? 0 };
+    return {
+      max: (maxMinHeight[0].max as number) ?? 0,
+      min: (maxMinHeight[0].min as number) ?? 0,
+    };
   };
 }
 

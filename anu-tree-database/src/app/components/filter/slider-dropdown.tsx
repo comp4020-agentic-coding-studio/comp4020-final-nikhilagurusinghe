@@ -17,6 +17,7 @@ type SliderDropdownProps = {
 };
 
 type SliderValues = { startValue: number; endValue: number };
+export type SliderMinMax = { max: number; min: number };
 type PortalPosition = { top: number; left: number; width: number };
 
 export default function SliderDropdown({
@@ -209,7 +210,7 @@ export default function SliderDropdown({
                   )}
                 />
               )}
-              minDistance={10}
+              minDistance={1}
             />
             <span className="text-white text-center w-full">
               in {unitsOfMeasurement}

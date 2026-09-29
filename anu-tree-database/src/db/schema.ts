@@ -6,7 +6,7 @@ export const treesTable = sqliteTable("trees_table", {
   scientificName: text().notNull(),
   commonName: text(),
   height: real().notNull(),
-  crownRadius: real(),  
+  crownRadius: real(),
   diameterBreastHeight: real().notNull(),
   age: text(),
   significance: text().notNull(),
