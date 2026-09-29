@@ -1,3 +1,5 @@
+"use client";
+
 import {
   MapContainer,
   TileLayer,
@@ -10,8 +12,9 @@ import "leaflet/dist/leaflet.css";
 import { LatLngTuple } from "leaflet";
 import TreeMarker from "./tree-marker";
 import TreePopup from "./tree-popup";
+import { MapProps } from "./map-ssr";
 
-export default function Map() {
+export default function Map({ visibleTrees }: MapProps) {
   const DEFAULT_POSITION: LatLngTuple = [-35.278576, 149.118371];
   const DEFAULT_ZOOM: number = 16;
   const MIN_ZOOM: number = 15;
@@ -31,26 +34,48 @@ export default function Map() {
       minZoom={MIN_ZOOM}
     >
       <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
-      <TreeMarker
-        colour="#125938"
-        position={DEFAULT_POSITION}
-        initialZoom={DEFAULT_ZOOM}
-      >
-        <TreePopup
-          name={"test tree"}
-          scientificName={"scientifica name"}
-          height={2}
-          crownRadius={20}
-          diameter={1}
-          age="Fair"
-          health="Good"
-          structure="Tree"
-          classification="Evergreen"
-          gpsCoords={[DEFAULT_POSITION[0], DEFAULT_POSITION[1]]}
-          comments="Big tree"
-          likes={2}
-        />
-      </TreeMarker>
+      {visibleTrees.map((tree, index) => {
+        if (index > 9000) return;
+        const gpsCoords: number[] = [tree.latitude, tree.longitude];
+        const gpsLatLngTuple: LatLngTuple = [tree.latitude, tree.longitude];
+
+        let colour: string = "#125938";
+
+        if (tree.classification === "Eucalyptus" || tree.classification === "Remnant Eucalyptus" || tree.classification === "Other Eucalyptus") {
+          colour = "#ff5050";
+        } else if (tree.classification === "Deciduous") {
+          colour = "#109b58";
+        } else if (tree.classification === "Evergreen") {
+          colour = "#82b649"
+        } else if (tree.classification === "Conifer") {
+          colour = "#0097a7"
+        } 
+
+        console.log(gpsLatLngTuple);
+        return (
+          <TreeMarker
+            key={tree.id}
+            colour={colour}
+            position={gpsLatLngTuple}
+            initialZoom={DEFAULT_ZOOM}
+          >
+            <TreePopup
+              name={tree.commonName}
+              scientificName={tree.scientificName}
+              height={tree.height}
+              crownRadius={tree.crownRadius}
+              diameter={tree.diameterBreastHeight}
+              age={tree.age}
+              health={tree.health}
+              structure={tree.structure}
+              classification={tree.classification}
+              gpsCoords={gpsCoords}
+              comments={tree.comments}
+              likes={tree.likes?.likes ?? null}
+            />
+          </TreeMarker>
+        );
+      })}
       <ZoomControl position="bottomright" />
     </MapContainer>
   );

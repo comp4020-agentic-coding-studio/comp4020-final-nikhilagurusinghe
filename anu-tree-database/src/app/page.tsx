@@ -9,10 +9,11 @@ import {
   getMaxMinHeight,
   getStructureOptions,
 } from "@/app/data/get-filter-options";
+import { getTreesViaFilter } from "./data/get-trees";
 
 export default async function Home() {
   return (
-    <div className="relative flex flex-1 w-full h-full flex-row justify-center font-sans bg-gray-500">
+    <div className="relative flex flex-1 w-full h-full flex-row justify-center font-sans bg-white">
       <Filters
         generaOptions={await getGeneraOptions()}
         classificationOptions={await getClassificationOptions()}
@@ -23,7 +24,7 @@ export default async function Home() {
         ageOptions={await getAgeOptions()}
       />
       <div className="flex w-full h-full items-center justify-center">
-        <MapSSR />
+        <MapSSR visibleTrees={await getTreesViaFilter()} />
       </div>
     </div>
   );

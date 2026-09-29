@@ -63,58 +63,80 @@ export default function Filters({
   }
 
   const generaParams: string | null = searchParams.get("genus");
-  const selectedGenera: ComboBoxOptions = (
-    generaParams ? generaParams.split(",") : []
-  ).map((val) => ({ value: val }));
+  const initialSelectedGenera: ComboBoxOptions = generaParams
+    ? generaParams.split(",").map((val) => ({ value: val }))
+    : [];
+  const [selectedGenera, setSelectedGenera] = useState<ComboBoxOptions>(
+    initialSelectedGenera,
+  );
+
   const classificationsParams: string | null =
     searchParams.get("classification");
-  const selectedClassifications: ComboBoxOptions = (
-    classificationsParams ? classificationsParams.split(",") : []
-  ).map((val) => ({ value: val }));
+  const initialSelectedClassifications: ComboBoxOptions = classificationsParams
+    ? classificationsParams.split(",").map((val) => ({ value: val }))
+    : [];
+  const [selectedClassifications, setSelectedClassifications] =
+    useState<ComboBoxOptions>(initialSelectedClassifications);
+
   const agesParams: string | null = searchParams.get("age");
-  const selectedAges: ComboBoxOptions = (
-    agesParams ? agesParams.split(",") : []
-  ).map((val) => ({ value: val }));
+  const initialSelectedAges: ComboBoxOptions = agesParams
+    ? agesParams.split(",").map((val) => ({ value: val }))
+    : [];
+  const [selectedAges, setSelectedAges] =
+    useState<ComboBoxOptions>(initialSelectedAges);
+
   const structuresParams: string | null = searchParams.get("structure");
-  const selectedStructures: ComboBoxOptions = (
-    structuresParams ? structuresParams.split(",") : []
-  ).map((val) => ({ value: val }));
+  const initialSelectedStructures: ComboBoxOptions = structuresParams
+    ? structuresParams.split(",").map((val) => ({ value: val }))
+    : [];
+  const [selectedStructures, setSelectedStructures] = useState<ComboBoxOptions>(
+    initialSelectedStructures,
+  );
 
   const heightsParams: string | null = searchParams.get("height");
   const heightsDefaultValue: SliderValues = {
     startValue: heightMinMax.min,
     endValue: heightMinMax.max,
   };
-  const selectedHeights: SliderValues = heightsParams
+  const initialSelectedHeights: SliderValues = heightsParams
     ? {
         startValue: Number(heightsParams.split(",")[0]),
         endValue: Number(heightsParams.split(",")[1]),
       }
     : heightsDefaultValue;
+  const [selectedHeights, setSelectedHeights] = useState<SliderValues>(
+    initialSelectedHeights,
+  );
 
   const crownRadsParams: string | null = searchParams.get("radius");
   const crownRadsDefaultValue: SliderValues = {
     startValue: crownRadMinMax.min,
     endValue: crownRadMinMax.max,
   };
-  const selectedCrownRads: SliderValues = crownRadsParams
+  const initialSelectedCrownRads: SliderValues = crownRadsParams
     ? {
         startValue: Number(crownRadsParams.split(",")[0]),
         endValue: Number(crownRadsParams.split(",")[1]),
       }
     : crownRadsDefaultValue;
+  const [selectedCrownRads, setSelectedCrownRads] = useState<SliderValues>(
+    initialSelectedCrownRads,
+  );
 
   const diametersParams: string | null = searchParams.get("diameter");
   const diametersDefaultValue: SliderValues = {
     startValue: diameterMinMax.min,
     endValue: diameterMinMax.max,
   };
-  const selectedDiameters: SliderValues = diametersParams
+  const initialSelectedDiameters: SliderValues = diametersParams
     ? {
         startValue: Number(diametersParams.split(",")[0]),
         endValue: Number(diametersParams.split(",")[1]),
       }
     : diametersDefaultValue;
+  const [selectedDiameters, setSelectedDiameters] = useState<SliderValues>(
+    initialSelectedDiameters,
+  );
 
   return (
     <div className="z-100 absolute w-full top-0 left-0 right-0 h-30 from-black/60 via-black/10 to-transparent text-white bg-linear-to-b overflow-x-auto overflow-y-visible scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
@@ -125,9 +147,10 @@ export default function Filters({
           label="classification"
           labelDescription="The classification of the tree species."
           selectedOptions={selectedClassifications}
-          setSelectedOptions={(newOptions: ComboBoxOptions) =>
-            handleComboBoxChange("classification", newOptions)
-          }
+          setSelectedOptions={(newOptions: ComboBoxOptions) => {
+            handleComboBoxChange("classification", newOptions);
+            setSelectedClassifications(newOptions);
+          }}
         />
         <ComboBox
           options={generaOptions}
@@ -135,9 +158,10 @@ export default function Filters({
           label="genera"
           labelDescription="The genus of the tree species."
           selectedOptions={selectedGenera}
-          setSelectedOptions={(newOptions: ComboBoxOptions) =>
-            handleComboBoxChange("genus", newOptions)
-          }
+          setSelectedOptions={(newOptions: ComboBoxOptions) => {
+            handleComboBoxChange("genus", newOptions);
+            setSelectedGenera(newOptions);
+          }}
         />
         <SliderDropdown
           label="height"
@@ -147,9 +171,10 @@ export default function Filters({
           sliderMin={heightMinMax.min}
           sliderMax={heightMinMax.max}
           sliderValues={selectedHeights}
-          setSliderValues={(newValues: SliderValues) =>
-            handleSliderChange("height", newValues, heightsDefaultValue)
-          }
+          setSliderValues={(newValues: SliderValues) => {
+            handleSliderChange("height", newValues, heightsDefaultValue);
+            setSelectedHeights(newValues);
+          }}
         />
         <SliderDropdown
           label="crown radius"
@@ -159,9 +184,10 @@ export default function Filters({
           sliderMin={crownRadMinMax.min}
           sliderMax={crownRadMinMax.max}
           sliderValues={selectedCrownRads}
-          setSliderValues={(newValues: SliderValues) =>
-            handleSliderChange("radius", newValues, crownRadsDefaultValue)
-          }
+          setSliderValues={(newValues: SliderValues) => {
+            handleSliderChange("radius", newValues, crownRadsDefaultValue);
+            setSelectedCrownRads(newValues);
+          }}
         />
         <SliderDropdown
           label="trunk diameter"
@@ -171,9 +197,10 @@ export default function Filters({
           sliderMin={diameterMinMax.min}
           sliderMax={diameterMinMax.max}
           sliderValues={selectedDiameters}
-          setSliderValues={(newValues: SliderValues) =>
-            handleSliderChange("diameter", newValues, diametersDefaultValue)
-          }
+          setSliderValues={(newValues: SliderValues) => {
+            handleSliderChange("diameter", newValues, diametersDefaultValue);
+            setSelectedDiameters(newValues);
+          }}
         />
         <ComboBox
           options={ageOptions}
@@ -181,9 +208,10 @@ export default function Filters({
           label="age"
           labelDescription="The age of the tree."
           selectedOptions={selectedAges}
-          setSelectedOptions={(newOptions: ComboBoxOptions) =>
-            handleComboBoxChange("age", newOptions)
-          }
+          setSelectedOptions={(newOptions: ComboBoxOptions) => {
+            handleComboBoxChange("age", newOptions);
+            setSelectedAges(newOptions);
+          }}
         />
         <ComboBox
           options={structureOptions}
@@ -191,9 +219,10 @@ export default function Filters({
           label="structure"
           labelDescription="The structure of the tree."
           selectedOptions={selectedStructures}
-          setSelectedOptions={(newOptions: ComboBoxOptions) =>
-            handleComboBoxChange("structure", newOptions)
-          }
+          setSelectedOptions={(newOptions: ComboBoxOptions) => {
+            handleComboBoxChange("structure", newOptions);
+            setSelectedStructures(newOptions);
+          }}
         />
       </div>
     </div>

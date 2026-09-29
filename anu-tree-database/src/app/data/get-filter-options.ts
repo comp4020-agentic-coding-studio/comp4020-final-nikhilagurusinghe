@@ -8,11 +8,10 @@ import { max, min } from "drizzle-orm";
 import { SQLiteColumn } from "drizzle-orm/sqlite-core";
 
 const CACHE_REVALIDATE_SECONDS: number = 3600;
+const db = drizzle(process.env.DB_FILE_NAME!);
 
 export const getGeneraOptions = unstable_cache(
   async (): Promise<ComboBoxOptions> => {
-    const db = drizzle(process.env.DB_FILE_NAME!);
-
     const allScientificNames = await db
       .selectDistinct({ scientificName: treesTable.scientificName })
       .from(treesTable);
@@ -33,8 +32,6 @@ export const getGeneraOptions = unstable_cache(
 
 export const getAgeOptions = unstable_cache(
   async (): Promise<ComboBoxOptions> => {
-    const db = drizzle(process.env.DB_FILE_NAME!);
-
     const distinctAges = await db
       .selectDistinct({ age: treesTable.age })
       .from(treesTable);
@@ -49,8 +46,6 @@ export const getAgeOptions = unstable_cache(
 
 export const getClassificationOptions = unstable_cache(
   async (): Promise<ComboBoxOptions> => {
-    const db = drizzle(process.env.DB_FILE_NAME!);
-
     const distinctAges = await db
       .selectDistinct({ classification: treesTable.classification })
       .from(treesTable);
@@ -67,8 +62,6 @@ export const getClassificationOptions = unstable_cache(
 
 export const getStructureOptions = unstable_cache(
   async (): Promise<ComboBoxOptions> => {
-    const db = drizzle(process.env.DB_FILE_NAME!);
-
     const distinctAges = await db
       .selectDistinct({ structure: treesTable.structure })
       .from(treesTable);
@@ -86,8 +79,6 @@ function getMaxMin(databaseColumn: SQLiteColumn): () => Promise<{
   min: number;
 }> {
   return async (): Promise<{ max: number; min: number }> => {
-    const db = drizzle(process.env.DB_FILE_NAME!);
-
     const maxMinHeight = await db
       .select({ max: max(databaseColumn), min: min(databaseColumn) })
       .from(treesTable);
