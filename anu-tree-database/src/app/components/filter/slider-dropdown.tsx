@@ -15,7 +15,7 @@ type SliderDropdownProps = {
   sliderMin: number;
   sliderMax: number;
   sliderValues: SliderValues;
-  setSliderValues: Dispatch<SetStateAction<SliderValues>>;
+  setSliderValues: (newValues: SliderValues) => void;
 };
 
 export type SliderValues = { startValue: number; endValue: number };
@@ -179,7 +179,7 @@ export default function SliderDropdown({
               ariaValuetext={(state) =>
                 `${label} slider value ${state.valueNow}`
               }
-              onChange={(newValueAndThumbIndex) =>
+              onAfterChange={(newValueAndThumbIndex) =>
                 setSliderValues({
                   startValue: newValueAndThumbIndex[0],
                   endValue: newValueAndThumbIndex[1],

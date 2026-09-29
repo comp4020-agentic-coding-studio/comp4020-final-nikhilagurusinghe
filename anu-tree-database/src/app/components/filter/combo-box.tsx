@@ -21,7 +21,7 @@ export type ComboBoxProps = {
   label: string;
   labelDescription: string;
   selectedOptions: ComboBoxOptions;
-  setSelectedOptions: Dispatch<SetStateAction<ComboBoxOptions>>;
+  setSelectedOptions: (newOptions: ComboBoxOptions) => void;
 };
 
 // https://headlessui.com/react/combobox#selecting-multiple-values
@@ -61,6 +61,7 @@ export default function ComboBox({
       <Combobox
         multiple
         immediate
+        by="value"
         value={selectedOptions}
         onChange={setSelectedOptions}
         onClose={() => {
