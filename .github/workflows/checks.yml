@@ -15,31 +15,53 @@ concurrency:
 
 jobs:
   check:
-    # Runs once the repo is public; until then `pnpm check` is the same
+    # Runs once the repo is public; until then `bun run check` is the same
     # sensors, locally.
     if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
       contents: read
+    env:
+      # where the spec looks for the running container
+      APP_URL: http://localhost:8080
+      # Modules open the database at import time, so anything on the runner
+      # that loads them needs a real file to point at — the committed one. The
+      # container gets the Fly volume path instead, set on `docker run` below.
+      DB_FILE_NAME: file:${{ github.workspace }}/anu-tree-database/src/db/treedb.sqlite
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # full history so the secret scan can see all commits
-      - uses: jdx/mise-action@v4
+      # The app is a Next.js project in anu-tree-database/ installed with bun;
+      # there is no package manifest at the repo root.
+      - uses: oven-sh/setup-bun@v2
         with:
-          cache: true
-      - run: pnpm install --frozen-lockfile
+          bun-version: 1.3.14 # matches packageManager and the Dockerfile
+      - name: Install dependencies
+        working-directory: anu-tree-database
+        run: bun install --frozen-lockfile
+      - name: Typecheck
+        # `check` runs the spec only, so this keeps the sensor the Astro
+        # template had as `astro check`. The image build would catch type
+        # errors too, but a dozen lines earlier and far more legibly.
+        working-directory: anu-tree-database
+        run: bun run typecheck
       - name: Build and start the app
         # the same image Fly deploys, with a throwaway /data in place of the
-        # volume; the spec runs against it
+        # volume; the spec runs against it. DB_FILE_NAME is what fly.toml sets
+        # in production, so the entrypoint seeds the same path it would there.
         run: |
           docker build -t app .
-          docker run -d --init --name app -p 8080:8080 -e PORT=8080 --tmpfs /data app
+          docker run -d --init --name app -p 8080:8080 \
+            -e PORT=8080 \
+            -e DB_FILE_NAME=file:/data/app.db \
+            --tmpfs /data app
       - name: Run the spec
-        run: pnpm check
-        env:
-          APP_URL: http://localhost:8080
+        # spec/ over HTTP against the container, via the same script you run
+        # locally; global-setup.ts waits for the app to answer before testing
+        working-directory: anu-tree-database
+        run: bun run check
       - name: Show the app's output
         # what the container printed, so a crash or slow boot is visible
         if: ${{ failure() }}
@@ -48,7 +70,8 @@ jobs:
         # skipped in the template repo itself, where PROCESS.md is still the
         # boilerplate every student replaces
         if: ${{ !github.event.repository.is_template }}
-        run: pnpm check:evidence
+        working-directory: anu-tree-database
+        run: bun run check:evidence
       - name: Scan for committed secrets
         # Pinned in both halves (action SHA and scanner image) because this
         # runs in every repo in the course. Bump between semesters.
