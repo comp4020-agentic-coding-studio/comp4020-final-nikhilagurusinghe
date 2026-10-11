@@ -16,3 +16,13 @@ which are judgement calls.
 
 Images go in `public/` and are linked relatively --- `![alt](public/before.png)`
 --- which renders on GitHub and at `/readme/` alike.
+
+Two terminals. Production path, closest to CI:
+
+bun run build && bun run serve:spec   # terminal 1
+bun run test                          # terminal 2
+
+Or against the dev server:
+
+bun run dev        # terminal 1, port 3000
+bun run test:dev   # terminal 2

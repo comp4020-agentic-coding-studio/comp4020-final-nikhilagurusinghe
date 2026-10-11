@@ -7,10 +7,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "serve:spec": "next start -p 8080",
     "lint": "biome check",
     "format": "biome format --write",
     "typecheck": "next typegen && tsc --noEmit",
-    "check": "bun typecheck && biome check && bun run build && cd .. && bun test spec scripts",
+    "check": "cd .. && bun test spec scripts",
+    "check:dev": "cd .. && APP_URL=http://localhost:3000 bun test spec scripts",
     "check:evidence": "cd .. && bun scripts/check-evidence.ts"
   },
   "dependencies": {
