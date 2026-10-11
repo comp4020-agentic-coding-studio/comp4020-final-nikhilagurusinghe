@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 // Checks what would otherwise be silently wrong in the process evidence:
 // CLAUDE.md missing, no crit reflection under a name the cutoff sweep reads,
 // PROCESS.md still carrying its template comment, or a cited commit that
