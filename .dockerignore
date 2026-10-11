@@ -1,15 +1,28 @@
 # What a remote build uploads from your working tree. CI checkouts carry none
 # of this, so it only matters for a deploy run from your own machine; without
 # it, node_modules and your local database ship to the builder.
+#
+# Patterns need the **/ prefix to reach into anu-tree-database/: a bare
+# node_modules only matches the one at the root, and the app's own copy holds
+# Windows binaries that would break the linux build.
 .git
-node_modules
+**/node_modules
+**/.next
 dist
 .astro
 .data
 *.log
+**/*.log
 .env
 .env.*
+**/.env
+**/.env.*
 .envrc
 mise.local.toml
 *.pem
+**/*.pem
 .claude
+
+# the working copy of the database; the committed one at
+# anu-tree-database/src/db/treedb.sqlite is the seed and must still ship
+anu-tree-database/src/db/treedb copy.sqlite

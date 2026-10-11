@@ -16,8 +16,11 @@ dockerfile = "Dockerfile"
 
 [env]
 # the SQLite file lives on the volume, so state survives reloads, restarts,
-# and redeploys
-DATABASE_PATH = "/data/app.db"
+# and redeploys. libsql wants a file: URL, and it has to be absolute: a
+# relative path would resolve against the container's working directory, not
+# the repo. docker-entrypoint.sh copies the committed database here on first
+# boot, when the volume is still empty.
+DB_FILE_NAME = "file:/data/app.db"
 
 [http_service]
 internal_port = 4321
