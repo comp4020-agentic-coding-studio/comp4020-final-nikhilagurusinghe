@@ -24,7 +24,7 @@ export const getGeneraOptions = unstable_cache(
       ),
     ).map((val) => ({ value: val }));
   },
-  undefined,
+  ["filter-options-genera"],
   {
     revalidate: CACHE_REVALIDATE_SECONDS,
   },
@@ -38,7 +38,7 @@ export const getAgeOptions = unstable_cache(
 
     return distinctAges.map(({ age }) => ({ value: age ?? "" }));
   },
-  undefined,
+  ["filter-options-age"],
   {
     revalidate: CACHE_REVALIDATE_SECONDS,
   },
@@ -54,7 +54,7 @@ export const getClassificationOptions = unstable_cache(
       value: classification,
     }));
   },
-  undefined,
+  ["filter-options-classification"],
   {
     revalidate: CACHE_REVALIDATE_SECONDS,
   },
@@ -68,7 +68,7 @@ export const getStructureOptions = unstable_cache(
 
     return distinctAges.map(({ structure }) => ({ value: structure }));
   },
-  undefined,
+  ["filter-options-structure"],
   {
     revalidate: CACHE_REVALIDATE_SECONDS,
   },
@@ -79,31 +79,31 @@ function getMaxMin(databaseColumn: SQLiteColumn): () => Promise<{
   min: number;
 }> {
   return async (): Promise<{ max: number; min: number }> => {
-    const maxMinHeight = await db
+    const maxMinColumn = await db
       .select({ max: max(databaseColumn), min: min(databaseColumn) })
       .from(treesTable);
 
     return {
-      max: (maxMinHeight[0].max as number) ?? 0,
-      min: (maxMinHeight[0].min as number) ?? 0,
+      max: (maxMinColumn[0].max as number) ?? 0,
+      min: (maxMinColumn[0].min as number) ?? 0,
     };
   };
 }
 
 export const getMaxMinHeight = unstable_cache(
   getMaxMin(treesTable.height),
-  undefined,
+  ["max-min-height"],
   { revalidate: CACHE_REVALIDATE_SECONDS },
 );
 
 export const getMaxMinCrownRadius = unstable_cache(
   getMaxMin(treesTable.crownRadius),
-  undefined,
+  ["max-min-crown-radius"],
   { revalidate: CACHE_REVALIDATE_SECONDS },
 );
 
 export const getMaxMinDBH = unstable_cache(
   getMaxMin(treesTable.diameterBreastHeight),
-  undefined,
+  ["max-min-diameter-breast-height"],
   { revalidate: CACHE_REVALIDATE_SECONDS },
 );

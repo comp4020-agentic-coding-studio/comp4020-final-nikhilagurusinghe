@@ -1,24 +1,8 @@
 import "server-only";
 
-import { unstable_cache } from "next/cache";
 import { drizzle } from "drizzle-orm/libsql";
-import { treesTable, relations } from "@/db/schema";
-import { ComboBoxOptions } from "../components/filter/combo-box";
-import {
-  and,
-  gte,
-  ilike,
-  inArray,
-  like,
-  lte,
-  max,
-  min,
-  or,
-  SQL,
-  sql,
-} from "drizzle-orm";
-import { SQLiteColumn } from "drizzle-orm/sqlite-core";
-import { SliderValues } from "../components/filter/slider-dropdown";
+import { relations } from "@/db/schema";
+import { TreeFilters } from "./tree-filter-params";
 
 const db = drizzle(process.env.DB_FILE_NAME!, { relations });
 
@@ -43,46 +27,28 @@ export type Tree = {
   likes: { treeId: number; likes: number } | null;
 };
 
-export function getTreesViaFilter(
-  genus?: string[],
-  commonName?: string[],
-  height?: SliderValues,
-  crownRadius?: SliderValues,
-  diameterBreastHeight?: SliderValues,
-  age?: string[],
-  health?: string[],
-  structure?: string[],
-  classification?: string[],
-): Promise<Tree[]> {
-  return getTreesViaFilterHelper(
-    genus,
-    commonName,
-    height,
-    crownRadius,
-    diameterBreastHeight,
-    age,
-    health,
-    structure,
-    classification,
-  )();
+export function getTreesViaFilter(filters: TreeFilters = {}): Promise<Tree[]> {
+  return getTreesViaFilterHelper(filters)();
 }
 
-function getTreesViaFilterHelper(
-  genus?: string[],
-  commonName?: string[],
-  height?: SliderValues,
-  crownRadius?: SliderValues,
-  diameterBreastHeight?: SliderValues,
-  age?: string[],
-  health?: string[],
-  structure?: string[],
-  classification?: string[],
-): () => Promise<Tree[]> {
+function getTreesViaFilterHelper(filters: TreeFilters): () => Promise<Tree[]> {
   return async (): Promise<Tree[]> => {
+    const {
+      genus,
+      commonName,
+      height,
+      crownRadius,
+      diameterBreastHeight,
+      age,
+      health,
+      structure,
+      classification,
+    } = filters;
+
     const where = {
       ...(genus?.length && {
         OR: genus.map((value) => ({
-          scientificName: { like: `%${value}%` },
+          scientificName: { like: `${value}%` },
         })),
       }),
       ...(commonName?.length && { commonName: { in: commonName } }),
