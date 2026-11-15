@@ -21,12 +21,38 @@ throwaway `/data`, and a red run blocks the deploy. Locally, start the app
 however you run it and `bun run check` finds it at `APP_URL` (default
 `http://localhost:8080`). Keep them; don't delete them.
 
-## Your checks
+## My checks
 
-Everything else in `spec/` is yours to write. Any `spec/*.test.ts` runs with
-`bun run check`, against the same running app. Some lines of a spec only a person
-can judge; those are left to the crit and the marker.
+These hold the promises `README.md` makes, and the rules in `CLAUDE.md` that
+are marked **(checked)**.
 
-At a crit, a green `check` job is half the shipped mark, but it's never the
-judgement of the work: your tutor checks what you deployed against the published
-spec.
+`promises.test.ts`, grouped by the README's sections:
+
+- **The data comes first**: every tree in the 2024 survey CSV with a trunk
+  measurement is a marker on the map, and nothing else is. It reads the CSV
+  directly, so a broken import or a filter that drops trees fails it.
+- **It works on a phone on campus**: the homepage stays under 1.5 MB (it was
+  4.3 MB when it crashed the 256 MB server), each marker carries only id,
+  latitude, longitude and classification, and the page sets a phone viewport.
+- **Accounts cost as little as possible**: email sign-up and password sign-in
+  are refused, and there's no magic link endpoint, so passkeys are the only
+  way in.
+- **Likes are live for everyone**: the multi-tree like stream sends every
+  requested tree's current count, and rejects requests with no valid ids.
+- **The argument is published**: the README up to "Running it yourself" is
+  400 to 600 words, and the copy
+  `/readme/` renders (`anu-tree-database/public/README.md`) matches it.
+
+`auth.test.ts` checks the auth endpoints answer, a forged sign-up is refused,
+the account menu is server-rendered, the per-tree and most liked streams send
+valid data, and a bad tree id gets a 400.
+
+Not checked yet, and judged by hand instead (see the README's "Enforced and
+judged"): one like per person per tree, and a like reaching another open
+browser within a second. Likes go through Next server actions, which a plain
+HTTP test can't call; checking them needs a like API route and a software
+passkey in the tests.
+
+Every check runs against the **running** app: `bun run check` (`APP_URL`,
+default `http://localhost:8080`), or `bun run check:dev` against the dev
+server.
