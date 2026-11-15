@@ -9,19 +9,35 @@ import "server-only";
 // streams on another, and this would need a shared channel such as Redis.
 
 type Listener = (likes: number) => void;
+type AnyTreeListener = (treeId: number, likes: number) => void;
 
 // Kept on globalThis so the server-action bundle and the route-handler bundle
 // share one hub (and so dev hot reloads don't orphan subscribers).
 const globalForLikes = globalThis as typeof globalThis & {
   __treeLikeListeners?: Map<number, Set<Listener>>;
+  __anyTreeLikeListeners?: Set<AnyTreeListener>;
 };
 if (!globalForLikes.__treeLikeListeners) {
   globalForLikes.__treeLikeListeners = new Map();
+}
+if (!globalForLikes.__anyTreeLikeListeners) {
+  globalForLikes.__anyTreeLikeListeners = new Set();
 }
 const listeners: Map<
   number,
   Set<Listener>
 > = globalForLikes.__treeLikeListeners;
+const anyTreeListeners: Set<AnyTreeListener> =
+  globalForLikes.__anyTreeLikeListeners;
+
+// Hears every like/unlike on every tree (the most liked trees list uses this
+// to know when to recompute). Returns an unsubscribe function.
+export function subscribeToAllTreeLikes(listener: AnyTreeListener): () => void {
+  anyTreeListeners.add(listener);
+  return () => {
+    anyTreeListeners.delete(listener);
+  };
+}
 
 // Returns an unsubscribe function.
 export function subscribeToTreeLikes(
@@ -44,5 +60,8 @@ export function subscribeToTreeLikes(
 export function publishTreeLikes(treeId: number, likes: number): void {
   for (const listener of listeners.get(treeId) ?? []) {
     listener(likes);
+  }
+  for (const listener of anyTreeListeners) {
+    listener(treeId, likes);
   }
 }

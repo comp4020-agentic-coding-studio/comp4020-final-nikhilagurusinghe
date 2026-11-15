@@ -7,16 +7,50 @@ import {
   Popup,
   Marker,
   CircleMarker,
+  useMap,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { LatLngTuple } from "leaflet";
 import TreeMarker from "./tree-marker";
 import TreePopup from "./tree-popup";
+import { classificationColour } from "./classification-colour";
+import LikedTrees from "./liked-trees";
+import type { LikedTree } from "@/app/data/get-my-liked-trees";
 import { MapProps } from "./map-ssr";
 import { useEffect, useRef, useState } from "react";
 import { getTreeDetails, type TreeDetails } from "@/app/data/get-tree-details";
 import type { TreeMarker as TreeMarkerData } from "@/app/data/get-trees";
 import { authClient } from "@/lib/auth-client";
+
+// Close enough to pick out the one dot. 18 is the tile layer's maximum: past
+// it Leaflet requests no imagery and the map goes blank.
+const LIKED_TREE_ZOOM = 18;
+
+// The liked trees box needs the Leaflet map to fly to a tree, and useMap only
+// works inside MapContainer, so it's mounted through this wrapper.
+function LikedTreesControl({
+  userId,
+  onOpenTree,
+}: {
+  userId: string | null;
+  onOpenTree: (tree: TreeMarkerData) => void;
+}) {
+  const map = useMap();
+
+  function showTree(tree: LikedTree): void {
+    map.flyTo([tree.latitude, tree.longitude], LIKED_TREE_ZOOM, {
+      duration: 0.8,
+    });
+    onOpenTree({
+      id: tree.id,
+      latitude: tree.latitude,
+      longitude: tree.longitude,
+      classification: tree.classification,
+    });
+  }
+
+  return <LikedTrees userId={userId} onSelect={showTree} />;
+}
 
 export default function Map({ visibleTrees }: MapProps) {
   const DEFAULT_POSITION: LatLngTuple = [-35.278576, 149.118371];
@@ -91,22 +125,6 @@ export default function Map({ visibleTrees }: MapProps) {
     >
       <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
       {visibleTrees.map((tree) => {
-        let colour: string = "#125938";
-
-        if (
-          tree.classification === "Eucalyptus" ||
-          tree.classification === "Remnant Eucalyptus" ||
-          tree.classification === "Other Eucalyptus"
-        ) {
-          colour = "#ff5050";
-        } else if (tree.classification === "Deciduous") {
-          colour = "#109b58";
-        } else if (tree.classification === "Evergreen") {
-          colour = "#82b649";
-        } else if (tree.classification === "Conifer") {
-          colour = "#0097a7";
-        }
-
         return (
           <CircleMarker
             key={tree.id}
@@ -115,7 +133,7 @@ export default function Map({ visibleTrees }: MapProps) {
             pathOptions={{
               color: "white",
               weight: 1,
-              fillColor: colour,
+              fillColor: classificationColour(tree.classification),
               fillOpacity: 1,
             }}
             eventHandlers={{ click: () => selectTree(tree) }}
@@ -169,6 +187,9 @@ export default function Map({ visibleTrees }: MapProps) {
             </main>
           )}
         </Popup>
+      )}
+      {!sessionPending && (
+        <LikedTreesControl userId={userId} onOpenTree={selectTree} />
       )}
       <ZoomControl position="bottomright" />
     </MapContainer>

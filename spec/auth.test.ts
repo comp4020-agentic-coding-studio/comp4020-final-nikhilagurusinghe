@@ -94,3 +94,40 @@ it(
   },
   REQUEST_TIMEOUT_MS,
 );
+
+it(
+  "streams the most liked trees as server-sent events",
+  async () => {
+    const controller = new AbortController();
+    const res = await fetch(new URL("/api/trees/top-liked/stream", baseUrl), {
+      signal: controller.signal,
+    });
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("text/event-stream");
+
+    // Read until the first whole data event (the current list), then hang up.
+    const reader = res.body!.getReader();
+    const decoder = new TextDecoder();
+    let text = "";
+    while (!/data: .*\n\n/.test(text)) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      text += decoder.decode(value);
+    }
+    controller.abort();
+
+    const data = text.split("\n").find((line) => line.startsWith("data: "));
+    expect(data).toBeDefined();
+    const { trees } = JSON.parse(data!.slice("data: ".length)) as {
+      trees: { id: number; likes: number }[];
+    };
+    expect(Array.isArray(trees)).toBe(true);
+    expect(trees.length).toBeLessThanOrEqual(10);
+    // Every tree on the list has at least one like, highest first.
+    for (const [i, tree] of trees.entries()) {
+      expect(tree.likes).toBeGreaterThan(0);
+      if (i > 0) expect(trees[i - 1].likes).toBeGreaterThanOrEqual(tree.likes);
+    }
+  },
+  REQUEST_TIMEOUT_MS,
+);

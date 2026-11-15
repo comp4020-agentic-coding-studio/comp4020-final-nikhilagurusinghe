@@ -4,6 +4,7 @@ import Link from "next/link";
 import HeartIcon from "../icons/heart";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { likeTree, unlikeTree } from "@/app/data/like-tree";
+import { announceMyLikesChanged } from "./my-likes-changed";
 
 export type TreePopupProps = {
   id: number;
@@ -86,6 +87,7 @@ export default function TreePopup({
         } else {
           setLiked(result.likedByMe);
           setLikeCount(result.likes);
+          announceMyLikesChanged();
         }
       } catch {
         setLiked(wasLiked);
