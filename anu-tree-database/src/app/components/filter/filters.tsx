@@ -4,7 +4,8 @@ import clsx from "clsx";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import ComboBox, { ComboBoxOptions } from "./combo-box";
 import SliderDropdown, { SliderMinMax, SliderValues } from "./slider-dropdown";
-import { Dispatch, ReactNode, SetStateAction, useState } from "react";
+import TopScrollbar from "./top-scrollbar";
+import { Dispatch, ReactNode, SetStateAction, useRef, useState } from "react";
 import queryString from "query-string";
 
 type FilterProps = {
@@ -143,104 +144,124 @@ export default function Filters({
     initialSelectedDiameters,
   );
 
+  const filterRowRef = useRef<HTMLDivElement>(null);
+
   return (
     <div className="z-100 absolute w-full top-0 left-0 right-0 h-30 from-black/60 via-black/10 to-transparent text-white bg-linear-to-b flex flex-row items-start">
       {/* Pinned at the start of the bar: stays put while the filters scroll. */}
       {leading && <div className="shrink-0 mt-5 ml-4">{leading}</div>}
-      {/* The filters scroll on their own, beside the pinned slot. (No fade
+      {/* The filters scroll on their own, beside the pinned slot. A browser
+          only draws a scrollbar under the row, so the row's own is hidden and
+          TopScrollbar draws one in the gap above the pills instead. (No fade
           mask here: a mask on this row stops the pills' backdrop blur.) */}
-      <div className="flex-1 min-w-0 h-full overflow-x-auto overflow-y-visible scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-        <div
+      <div className="relative flex-1 min-w-0 h-full">
+        <TopScrollbar
+          targetRef={filterRowRef}
           className={clsx(
-            "flex flex-row gap-x-2.5 mt-5 w-auto items-center justify-start",
-            leading ? "pl-2.5" : "ml-4",
+            "absolute top-1 right-4 z-1",
+            leading ? "left-2.5" : "left-4",
           )}
+        />
+        <div
+          ref={filterRowRef}
+          className="h-full overflow-x-auto overflow-y-visible scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
-          <ComboBox
-            options={classificationOptions}
-            ariaLabel="Choose classification to filter by"
-            label="classification"
-            labelDescription="The classification of the tree species."
-            selectedOptions={selectedClassifications}
-            setSelectedOptions={(newOptions: ComboBoxOptions) => {
-              handleComboBoxChange("classification", newOptions);
-              setSelectedClassifications(newOptions);
-            }}
-          />
-          <ComboBox
-            options={generaOptions}
-            ariaLabel="Choose genuses to filter by"
-            label="genera"
-            labelDescription="The genus of the tree species."
-            selectedOptions={selectedGenera}
-            setSelectedOptions={(newOptions: ComboBoxOptions) => {
-              handleComboBoxChange("genus", newOptions);
-              setSelectedGenera(newOptions);
-            }}
-          />
-          <SliderDropdown
-            label="height"
-            labelDescription="The height of the tree."
-            unitsOfMeasurement="metres"
-            unitAbbreviation="m"
-            sliderMin={heightMinMax.min}
-            sliderMax={heightMinMax.max}
-            sliderValues={selectedHeights}
-            setSliderValues={(newValues: SliderValues) => {
-              handleSliderChange("height", newValues, heightsDefaultValue);
-              setSelectedHeights(newValues);
-            }}
-          />
-          <SliderDropdown
-            label="crown radius"
-            labelDescription="The radius of the tree at the widest part of its canopy."
-            unitsOfMeasurement="metres"
-            unitAbbreviation="m"
-            sliderMin={crownRadMinMax.min}
-            sliderMax={crownRadMinMax.max}
-            sliderValues={selectedCrownRads}
-            setSliderValues={(newValues: SliderValues) => {
-              handleSliderChange("radius", newValues, crownRadsDefaultValue);
-              setSelectedCrownRads(newValues);
-            }}
-          />
-          <SliderDropdown
-            label="trunk diameter"
-            labelDescription="The radius of the tree at the widest part of its canopy."
-            unitsOfMeasurement="centimetres"
-            unitAbbreviation="cm"
-            sliderMin={diameterMinMax.min}
-            sliderMax={diameterMinMax.max}
-            sliderValues={selectedDiameters}
-            setSliderValues={(newValues: SliderValues) => {
-              handleSliderChange("diameter", newValues, diametersDefaultValue);
-              setSelectedDiameters(newValues);
-            }}
-          />
-          <ComboBox
-            options={ageOptions}
-            ariaLabel="Choose age to filter by"
-            label="age"
-            labelDescription="The age of the tree."
-            selectedOptions={selectedAges}
-            setSelectedOptions={(newOptions: ComboBoxOptions) => {
-              handleComboBoxChange("age", newOptions);
-              setSelectedAges(newOptions);
-            }}
-          />
-          <ComboBox
-            options={structureOptions}
-            ariaLabel="Choose structure to filter by"
-            label="structure"
-            labelDescription="The structure of the tree."
-            selectedOptions={selectedStructures}
-            setSelectedOptions={(newOptions: ComboBoxOptions) => {
-              handleComboBoxChange("structure", newOptions);
-              setSelectedStructures(newOptions);
-            }}
-          />
-          {/* keeps the last pill off the screen edge when scrolled to the end */}
-          <div aria-hidden={true} className="shrink-0 w-2" />
+          <div
+            className={clsx(
+              "flex flex-row gap-x-2.5 mt-5 w-auto items-center justify-start",
+              leading ? "pl-2.5" : "ml-4",
+            )}
+          >
+            <ComboBox
+              options={classificationOptions}
+              ariaLabel="Choose classification to filter by"
+              label="classification"
+              labelDescription="The classification of the tree species."
+              selectedOptions={selectedClassifications}
+              setSelectedOptions={(newOptions: ComboBoxOptions) => {
+                handleComboBoxChange("classification", newOptions);
+                setSelectedClassifications(newOptions);
+              }}
+            />
+            <ComboBox
+              options={generaOptions}
+              ariaLabel="Choose genuses to filter by"
+              label="genera"
+              labelDescription="The genus of the tree species."
+              selectedOptions={selectedGenera}
+              setSelectedOptions={(newOptions: ComboBoxOptions) => {
+                handleComboBoxChange("genus", newOptions);
+                setSelectedGenera(newOptions);
+              }}
+            />
+            <SliderDropdown
+              label="height"
+              labelDescription="The height of the tree."
+              unitsOfMeasurement="metres"
+              unitAbbreviation="m"
+              sliderMin={heightMinMax.min}
+              sliderMax={heightMinMax.max}
+              sliderValues={selectedHeights}
+              setSliderValues={(newValues: SliderValues) => {
+                handleSliderChange("height", newValues, heightsDefaultValue);
+                setSelectedHeights(newValues);
+              }}
+            />
+            <SliderDropdown
+              label="crown radius"
+              labelDescription="The radius of the tree at the widest part of its canopy."
+              unitsOfMeasurement="metres"
+              unitAbbreviation="m"
+              sliderMin={crownRadMinMax.min}
+              sliderMax={crownRadMinMax.max}
+              sliderValues={selectedCrownRads}
+              setSliderValues={(newValues: SliderValues) => {
+                handleSliderChange("radius", newValues, crownRadsDefaultValue);
+                setSelectedCrownRads(newValues);
+              }}
+            />
+            <SliderDropdown
+              label="trunk diameter"
+              labelDescription="The radius of the tree at the widest part of its canopy."
+              unitsOfMeasurement="centimetres"
+              unitAbbreviation="cm"
+              sliderMin={diameterMinMax.min}
+              sliderMax={diameterMinMax.max}
+              sliderValues={selectedDiameters}
+              setSliderValues={(newValues: SliderValues) => {
+                handleSliderChange(
+                  "diameter",
+                  newValues,
+                  diametersDefaultValue,
+                );
+                setSelectedDiameters(newValues);
+              }}
+            />
+            <ComboBox
+              options={ageOptions}
+              ariaLabel="Choose age to filter by"
+              label="age"
+              labelDescription="The age of the tree."
+              selectedOptions={selectedAges}
+              setSelectedOptions={(newOptions: ComboBoxOptions) => {
+                handleComboBoxChange("age", newOptions);
+                setSelectedAges(newOptions);
+              }}
+            />
+            <ComboBox
+              options={structureOptions}
+              ariaLabel="Choose structure to filter by"
+              label="structure"
+              labelDescription="The structure of the tree."
+              selectedOptions={selectedStructures}
+              setSelectedOptions={(newOptions: ComboBoxOptions) => {
+                handleComboBoxChange("structure", newOptions);
+                setSelectedStructures(newOptions);
+              }}
+            />
+            {/* keeps the last pill off the screen edge when scrolled to the end */}
+            <div aria-hidden={true} className="shrink-0 w-2" />
+          </div>
         </div>
       </div>
     </div>
