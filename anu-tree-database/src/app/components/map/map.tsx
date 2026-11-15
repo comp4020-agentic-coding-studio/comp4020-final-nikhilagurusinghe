@@ -13,15 +13,41 @@ import { LatLngTuple } from "leaflet";
 import TreeMarker from "./tree-marker";
 import TreePopup from "./tree-popup";
 import { MapProps } from "./map-ssr";
-import { useState } from "react";
-import { Tree } from "@/app/data/get-trees";
+import { useRef, useState } from "react";
+import { Tree, TreeMarker as TreeMarkerData } from "@/app/data/get-trees";
+import { getTreeDetails } from "@/app/data/get-tree-details";
 
 export default function Map({ visibleTrees }: MapProps) {
   const DEFAULT_POSITION: LatLngTuple = [-35.278576, 149.118371];
   const DEFAULT_ZOOM: number = 16;
   const MIN_ZOOM: number = 15;
 
-  const [selectedTree, setSelectedTree] = useState<Tree | null>(null);
+  // The page only sends each tree's position and classification; the rest is
+  // loaded when its dot is clicked, so the popup opens straight away at the dot
+  // and fills in once the details arrive.
+  const [selectedTree, setSelectedTree] = useState<TreeMarkerData | null>(null);
+  const [selectedDetails, setSelectedDetails] = useState<Tree | null>(null);
+  const [detailsFailed, setDetailsFailed] = useState<boolean>(false);
+  // Which tree the latest click asked for, so a slow response for a tree the
+  // user has since clicked away from is ignored.
+  const requestedTreeId = useRef<number | null>(null);
+
+  function selectTree(tree: TreeMarkerData): void {
+    requestedTreeId.current = tree.id;
+    setSelectedTree(tree);
+    setSelectedDetails(null);
+    setDetailsFailed(false);
+
+    getTreeDetails(tree.id)
+      .then((details) => {
+        if (requestedTreeId.current !== tree.id) return;
+        if (details) setSelectedDetails(details);
+        else setDetailsFailed(true);
+      })
+      .catch(() => {
+        if (requestedTreeId.current === tree.id) setDetailsFailed(true);
+      });
+  }
 
   return (
     <MapContainer
@@ -66,7 +92,7 @@ export default function Map({ visibleTrees }: MapProps) {
               fillColor: colour,
               fillOpacity: 1,
             }}
-            eventHandlers={{ click: () => setSelectedTree(tree) }}
+            eventHandlers={{ click: () => selectTree(tree) }}
           ></CircleMarker>
         );
       })}
@@ -79,24 +105,40 @@ export default function Map({ visibleTrees }: MapProps) {
       [&_.leaflet-popup-content-wrapper]:bg-transparent! [&_.leaflet-popup-content-wrapper]:backdrop-blur-xl! [&_.leaflet-popup-content-wrapper]:border-white/20! [&_.leaflet-popup-content-wrapper]:rounded-2xl! [&_.leaflet-popup-content-wrapper]:border!
     [&_.leaflet-popup-close-button_span]:text-white! [&_.leaflet-popup-close-button_span]:font-serif! [&_.leaflet-popup-close-button_span]:text-3xl!
       [&_.leaflet-popup-close-button]:mt-1! [&_.leaflet-popup-close-button]:mr-2.5!"
-          eventHandlers={{ remove: () => setSelectedTree(null) }}
+          eventHandlers={{
+            remove: () => {
+              requestedTreeId.current = null;
+              setSelectedTree(null);
+              setSelectedDetails(null);
+            },
+          }}
         >
-          <TreePopup
-            key={selectedTree.id}
-            id={selectedTree.id}
-            name={selectedTree.commonName}
-            scientificName={selectedTree.scientificName}
-            height={selectedTree.height}
-            crownRadius={selectedTree.crownRadius}
-            diameter={selectedTree.diameterBreastHeight}
-            age={selectedTree.age}
-            health={selectedTree.health}
-            structure={selectedTree.structure}
-            classification={selectedTree.classification}
-            gpsCoords={[selectedTree.latitude, selectedTree.longitude]}
-            comments={selectedTree.comments}
-            likes={selectedTree.likes?.likes ?? null}
-          />
+          {selectedDetails ? (
+            <TreePopup
+              key={selectedDetails.id}
+              id={selectedDetails.id}
+              name={selectedDetails.commonName}
+              scientificName={selectedDetails.scientificName}
+              height={selectedDetails.height}
+              crownRadius={selectedDetails.crownRadius}
+              diameter={selectedDetails.diameterBreastHeight}
+              age={selectedDetails.age}
+              health={selectedDetails.health}
+              structure={selectedDetails.structure}
+              classification={selectedDetails.classification}
+              gpsCoords={[selectedDetails.latitude, selectedDetails.longitude]}
+              comments={selectedDetails.comments}
+              likes={selectedDetails.likes?.likes ?? null}
+            />
+          ) : (
+            <main className="flex flex-col px-1 py-2 pr-6">
+              <span className="text-sm">
+                {detailsFailed
+                  ? "couldn't load this tree, try clicking it again"
+                  : "loading…"}
+              </span>
+            </main>
+          )}
         </Popup>
       )}
       <ZoomControl position="bottomright" />

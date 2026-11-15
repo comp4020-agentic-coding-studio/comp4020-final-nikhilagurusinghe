@@ -54,6 +54,10 @@ COPY --from=build /app/public ./public
 # entrypoint. Kept outside /data so the volume mount can't shadow it.
 COPY --from=build /app/src/db/treedb.sqlite /app/seed/treedb.sqlite
 
+# Migrations the server applies to the volume's database on boot
+# (src/instrumentation.ts), resolved from the working directory, /app.
+COPY --from=build /app/drizzle ./drizzle
+
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 

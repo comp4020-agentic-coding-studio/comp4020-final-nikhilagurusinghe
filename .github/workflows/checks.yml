@@ -56,6 +56,8 @@ jobs:
           docker run -d --init --name app -p 8080:8080 \
             -e PORT=8080 \
             -e DB_FILE_NAME=file:/data/app.db \
+            -e BETTER_AUTH_SECRET="$(openssl rand -base64 32)" \
+            -e BETTER_AUTH_URL=http://localhost:8080 \
             --tmpfs /data app
       - name: Run the spec
         # spec/ over HTTP against the container, via the same script you run

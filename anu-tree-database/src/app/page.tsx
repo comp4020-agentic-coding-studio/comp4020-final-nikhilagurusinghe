@@ -1,3 +1,6 @@
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+import AccountMenu from "./components/account/account-menu";
 import Filters from "./components/filter/filters";
 import MapSSR from "./components/map/map-ssr";
 import {
@@ -16,6 +19,7 @@ type HomeProps = { searchParams: Promise<SearchParams> };
 
 export default async function Home({ searchParams }: HomeProps) {
   const filters = parseTreeFilters(await searchParams);
+  const session = await auth.api.getSession({ headers: await headers() });
 
   return (
     <div className="relative flex flex-1 w-full h-full flex-row justify-center font-sans bg-white">
@@ -27,6 +31,9 @@ export default async function Home({ searchParams }: HomeProps) {
         diameterMinMax={await getMaxMinDBH()}
         structureOptions={await getStructureOptions()}
         ageOptions={await getAgeOptions()}
+        leading={
+          <AccountMenu initialUsername={session?.user.username ?? null} />
+        }
       />
       <div className="flex w-full h-full items-center justify-center">
         <MapSSR visibleTrees={await getTreesViaFilter(filters)} />

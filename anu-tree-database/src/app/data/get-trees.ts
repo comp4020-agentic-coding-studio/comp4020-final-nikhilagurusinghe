@@ -27,12 +27,25 @@ export type Tree = {
   likes: { treeId: number; likes: number } | null;
 };
 
-export function getTreesViaFilter(filters: TreeFilters = {}): Promise<Tree[]> {
+// Just enough to draw a tree's dot on the map. The page renders every visible
+// tree into its HTML, so sending all of Tree for ~9,000 trees made a 4MB page
+// that ran the 256MB Fly machine out of memory. Everything else is fetched for
+// one tree at a time when its popup opens (see get-tree-details.ts).
+export type TreeMarker = Pick<
+  Tree,
+  "id" | "latitude" | "longitude" | "classification"
+>;
+
+export function getTreesViaFilter(
+  filters: TreeFilters = {},
+): Promise<TreeMarker[]> {
   return getTreesViaFilterHelper(filters)();
 }
 
-function getTreesViaFilterHelper(filters: TreeFilters): () => Promise<Tree[]> {
-  return async (): Promise<Tree[]> => {
+function getTreesViaFilterHelper(
+  filters: TreeFilters,
+): () => Promise<TreeMarker[]> {
+  return async (): Promise<TreeMarker[]> => {
     const {
       genus,
       commonName,
@@ -72,7 +85,12 @@ function getTreesViaFilterHelper(filters: TreeFilters): () => Promise<Tree[]> {
 
     return db.query.treesTable.findMany({
       where,
-      with: { likes: true },
+      columns: {
+        id: true,
+        latitude: true,
+        longitude: true,
+        classification: true,
+      },
     });
   };
 }

@@ -1,10 +1,10 @@
 "use client";
 
-import { Tree } from "@/app/data/get-trees";
+import { TreeMarker } from "@/app/data/get-trees";
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
 
-export type MapProps = { visibleTrees: Tree[] };
+export type MapProps = { visibleTrees: TreeMarker[] };
 
 // https://www.tomisin.dev/blog/displaying-a-leaflet-map-in-nextjs
 export default function MapSSR({ visibleTrees }: MapProps) {
