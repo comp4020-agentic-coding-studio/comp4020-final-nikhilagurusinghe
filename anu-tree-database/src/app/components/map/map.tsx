@@ -13,9 +13,10 @@ import { LatLngTuple } from "leaflet";
 import TreeMarker from "./tree-marker";
 import TreePopup from "./tree-popup";
 import { MapProps } from "./map-ssr";
-import { useRef, useState } from "react";
-import { Tree, TreeMarker as TreeMarkerData } from "@/app/data/get-trees";
-import { getTreeDetails } from "@/app/data/get-tree-details";
+import { useEffect, useRef, useState } from "react";
+import { getTreeDetails, type TreeDetails } from "@/app/data/get-tree-details";
+import type { TreeMarker as TreeMarkerData } from "@/app/data/get-trees";
+import { authClient } from "@/lib/auth-client";
 
 export default function Map({ visibleTrees }: MapProps) {
   const DEFAULT_POSITION: LatLngTuple = [-35.278576, 149.118371];
@@ -26,18 +27,24 @@ export default function Map({ visibleTrees }: MapProps) {
   // loaded when its dot is clicked, so the popup opens straight away at the dot
   // and fills in once the details arrive.
   const [selectedTree, setSelectedTree] = useState<TreeMarkerData | null>(null);
-  const [selectedDetails, setSelectedDetails] = useState<Tree | null>(null);
+  const [selectedDetails, setSelectedDetails] = useState<TreeDetails | null>(
+    null,
+  );
   const [detailsFailed, setDetailsFailed] = useState<boolean>(false);
   // Which tree the latest click asked for, so a slow response for a tree the
   // user has since clicked away from is ignored.
   const requestedTreeId = useRef<number | null>(null);
 
-  function selectTree(tree: TreeMarkerData): void {
-    requestedTreeId.current = tree.id;
-    setSelectedTree(tree);
-    setSelectedDetails(null);
-    setDetailsFailed(false);
+  // Who's signed in, shared with the account menu. An open popup's "signed in"
+  // and "liked by me" come from when it was loaded, so when this changes (sign
+  // in, sign up, sign out) the open tree is reloaded for the new user.
+  const { data: session, isPending: sessionPending } = authClient.useSession();
+  const userId: string | null = session?.user.id ?? null;
+  const selectedTreeRef = useRef<TreeMarkerData | null>(null);
+  const loadedForUser = useRef<string | null | undefined>(undefined);
 
+  function loadDetails(tree: TreeMarkerData): void {
+    loadedForUser.current = userId;
     getTreeDetails(tree.id)
       .then((details) => {
         if (requestedTreeId.current !== tree.id) return;
@@ -48,6 +55,25 @@ export default function Map({ visibleTrees }: MapProps) {
         if (requestedTreeId.current === tree.id) setDetailsFailed(true);
       });
   }
+
+  function selectTree(tree: TreeMarkerData): void {
+    requestedTreeId.current = tree.id;
+    selectedTreeRef.current = tree;
+    setSelectedTree(tree);
+    setSelectedDetails(null);
+    setDetailsFailed(false);
+    loadDetails(tree);
+  }
+
+  // Reload the open tree when the signed-in user changes. The popup is keyed
+  // on the user too, so it starts fresh with the new like state.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: runs on user change only
+  useEffect(() => {
+    if (sessionPending) return;
+    const tree = selectedTreeRef.current;
+    if (!tree || loadedForUser.current === userId) return;
+    loadDetails(tree);
+  }, [userId, sessionPending]);
 
   return (
     <MapContainer
@@ -108,6 +134,7 @@ export default function Map({ visibleTrees }: MapProps) {
           eventHandlers={{
             remove: () => {
               requestedTreeId.current = null;
+              selectedTreeRef.current = null;
               setSelectedTree(null);
               setSelectedDetails(null);
             },
@@ -115,7 +142,7 @@ export default function Map({ visibleTrees }: MapProps) {
         >
           {selectedDetails ? (
             <TreePopup
-              key={selectedDetails.id}
+              key={`${selectedDetails.id}:${userId ?? "signed-out"}`}
               id={selectedDetails.id}
               name={selectedDetails.commonName}
               scientificName={selectedDetails.scientificName}
@@ -129,6 +156,8 @@ export default function Map({ visibleTrees }: MapProps) {
               gpsCoords={[selectedDetails.latitude, selectedDetails.longitude]}
               comments={selectedDetails.comments}
               likes={selectedDetails.likes?.likes ?? null}
+              likedByMe={selectedDetails.likedByMe}
+              signedIn={selectedDetails.signedIn}
             />
           ) : (
             <main className="flex flex-col px-1 py-2 pr-6">

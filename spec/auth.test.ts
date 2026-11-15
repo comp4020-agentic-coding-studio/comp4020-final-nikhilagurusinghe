@@ -53,3 +53,44 @@ it(
   },
   REQUEST_TIMEOUT_MS,
 );
+
+it(
+  "streams a tree's live like count as server-sent events",
+  async () => {
+    const controller = new AbortController();
+    const res = await fetch(new URL("/api/trees/1/likes/stream", baseUrl), {
+      signal: controller.signal,
+    });
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("text/event-stream");
+
+    // Read until the first data event (the current count), then hang up.
+    const reader = res.body!.getReader();
+    const decoder = new TextDecoder();
+    let text = "";
+    while (!text.includes("data: ")) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      text += decoder.decode(value);
+    }
+    controller.abort();
+
+    const data = text.split("\n").find((line) => line.startsWith("data: "));
+    expect(data).toBeDefined();
+    const { likes } = JSON.parse(data!.slice("data: ".length));
+    expect(Number.isInteger(likes)).toBe(true);
+    expect(likes).toBeGreaterThanOrEqual(0);
+  },
+  REQUEST_TIMEOUT_MS,
+);
+
+it(
+  "rejects a like stream for a tree id that isn't a number",
+  async () => {
+    const res = await fetch(
+      new URL("/api/trees/not-a-tree/likes/stream", baseUrl),
+    );
+    expect(res.status).toBe(400);
+  },
+  REQUEST_TIMEOUT_MS,
+);

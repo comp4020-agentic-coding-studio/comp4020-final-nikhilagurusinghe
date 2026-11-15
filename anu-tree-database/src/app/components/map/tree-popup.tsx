@@ -2,8 +2,8 @@ import { Popup } from "react-leaflet";
 import LinkIcon from "../icons/link";
 import Link from "next/link";
 import HeartIcon from "../icons/heart";
-import { useState, useTransition } from "react";
-import { likeTree } from "@/app/data/like-tree";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { likeTree, unlikeTree } from "@/app/data/like-tree";
 
 export type TreePopupProps = {
   id: number;
@@ -19,6 +19,8 @@ export type TreePopupProps = {
   gpsCoords: number[];
   comments: string | null;
   likes: number | null;
+  likedByMe: boolean;
+  signedIn: boolean;
 };
 
 export default function TreePopup({
@@ -35,24 +37,62 @@ export default function TreePopup({
   gpsCoords,
   comments,
   likes,
+  likedByMe,
+  signedIn,
 }: TreePopupProps) {
   const [likeCount, setLikeCount] = useState<number>(likes ?? 0);
-  const [likeSent, setLikeSent] = useState<boolean>(false);
+  const [liked, setLiked] = useState<boolean>(likedByMe);
+  const [likeMessage, setLikeMessage] = useState<string | null>(null);
   const [likePending, startLikeTransition] = useTransition();
+  // While a like/unlike is in flight, a live update can carry a total from
+  // before it landed; ignore those so the optimistic count doesn't flicker.
+  const likeInFlight = useRef<boolean>(false);
+
+  // Live count: an SSE stream for this tree while the popup is open. It sends
+  // the current total on connect and every change after, from anyone.
+  useEffect(() => {
+    const source = new EventSource(`/api/trees/${id}/likes/stream`);
+    source.onmessage = (event) => {
+      if (likeInFlight.current) return;
+      const { likes: liveLikes } = JSON.parse(event.data) as { likes: number };
+      setLikeCount(liveLikes);
+    };
+    return () => source.close();
+  }, [id]);
 
   function handleLike(): void {
-    if (likeSent || likePending) return;
+    if (likePending) return;
+    if (!signedIn) {
+      setLikeMessage("sign in to like trees");
+      return;
+    }
 
-    // Fill the heart straight away, then reconcile with the real total.
-    setLikeSent(true);
-    setLikeCount((count) => count + 1);
+    // Flip the heart and the count straight away, then settle on the server's
+    // answer.
+    const wasLiked = liked;
+    const previousCount = likeCount;
+    setLiked(!wasLiked);
+    setLikeCount((count) => Math.max(count + (wasLiked ? -1 : 1), 0));
+    setLikeMessage(null);
+    likeInFlight.current = true;
 
     startLikeTransition(async () => {
       try {
-        setLikeCount(await likeTree(id));
-      } catch (error) {
-        setLikeSent(false);
-        setLikeCount(likes ?? 0);
+        const result = wasLiked ? await unlikeTree(id) : await likeTree(id);
+        if ("error" in result) {
+          setLiked(wasLiked);
+          setLikeCount(previousCount);
+          setLikeMessage("sign in to like trees");
+        } else {
+          setLiked(result.likedByMe);
+          setLikeCount(result.likes);
+        }
+      } catch {
+        setLiked(wasLiked);
+        setLikeCount(previousCount);
+        setLikeMessage("couldn't save that, try again");
+      } finally {
+        likeInFlight.current = false;
       }
     });
   }
@@ -81,17 +121,21 @@ export default function TreePopup({
       <div className="flex flex-row gap-x-1 gap-y-1 w-full flex-wrap mt-5">
         <button
           type="button"
-          aria-label={`Like this tree, ${likeCount} likes so far`}
-          aria-pressed={likeSent}
-          disabled={likeSent || likePending}
+          aria-label={
+            liked
+              ? `Unlike this tree, ${likeCount} likes so far`
+              : `Like this tree, ${likeCount} likes so far`
+          }
+          aria-pressed={liked}
+          disabled={likePending}
           className="group cursor-pointer disabled:cursor-default flex flex-row text-sm font-bold w-fit items-center gap-x-2 backdrop-blur-md bg-white/20 py-1 px-3 text-white rounded-full whitespace-nowrap truncate"
           onClick={handleLike}
         >
           <HeartIcon
             height={15}
-            stroke={likeSent ? "red" : "#d0d0d0"}
+            stroke={liked ? "red" : "#d0d0d0"}
             strokeWidth={3}
-            fill={likeSent ? "red" : "none"}
+            fill={liked ? "red" : "none"}
             className="group-hover:scale-120 transition-all"
           />
           {likeCount} likes
@@ -135,6 +179,7 @@ export default function TreePopup({
           </span>
         </Link>
       </div>
+      {likeMessage && <output className="mt-2 text-sm">{likeMessage}</output>}
     </main>
   );
 }
